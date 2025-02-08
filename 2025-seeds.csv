@@ -1,0 +1,43 @@
+Seed,Variant,Brand,Year,Days,Days (after transplant),Season,Per Square,Sun,Frost,Planting Method,Plant in 2025,Transplant Delta,Last Frost Delta,Start Indoors,Transplant / Sow
+Basil,Genovese O Comune,McKenzie Seeds,,85,,Warm,4,Full Sun,Not tolerant,Transplant,TRUE,110,0,1/19/2025,5/9/2025
+Basil,Sweet,McKenzie Seeds,,85,,Warm,4,Full Sun,Not tolerant,Transplant,TRUE,110,0,1/19/2025,5/9/2025
+Bokchoy,Cantong White,McKenzie Seeds,,50,,Cool,2,Full Sun,Tolerant,Transplant,TRUE,17,49,3/4/2025,3/21/2025
+Bokchoy,Toy Choi,West Coast Seeds,2024,50,,Cool,2,Full Sun,Tolerant,Transplant,TRUE,17,49,3/4/2025,3/21/2025
+Bokchoy,Taiwan Pac Choi,West Coast Seeds,2024,45,,Cool,2,Full Sun,Tolerant,Transplant,TRUE,17,49,3/4/2025,3/21/2025
+Lettuce,Buttercrunch,McKenzie Seeds,,70,,Cool,4,Full Sun,Semi-tolerant,Transplant,TRUE,17,49,3/4/2025,3/21/2025
+Garlic Chives,HR1070,West Coast Seeds,2023; 2024,,,Perennial,4,Full Sun,Tolerant,Transplant,TRUE,16,49,3/5/2025,3/21/2025
+Tomato,Sweet Million,West Coast Seeds,2024,,65,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,65,0,3/5/2025,5/9/2025
+Tomato,Big Beef,Renee's Garden,2024,,75,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,65,0,3/5/2025,5/9/2025
+Forget-me-nots,Azure Bluebirds,Renee's Garden,2024,90,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,57,6,3/7/2025,5/3/2025
+Marigold,Davenport Village,,2024,,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,57,6,3/7/2025,5/3/2025
+Green Onion,Annual Bunching,McKenzie Seeds,,75,,Cool,4,Full Sun,Tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Green Onion,White Lisbon Bunching,McKenzie Seeds,,80,,Cool,4,Full Sun,Tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Parsley,Moss Curled,McKenzie Seeds,,75,,Cool,4,Full Sun,Tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Sage,HR1132,West Coast Seeds,2025,,,Warm,,Full Sun,Not tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Shiso,HR1157,West Coast Seeds,2023,20,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Shiso,Bicolored,Renee's Garden,2024,20,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
+Catmint,,Renee's Garden,2024,,,Warm,1,Full Sun,Semi-tolerant,Transplant,TRUE,42,0,3/28/2025,5/9/2025
+Cucumber,Tasty Green,McKenzie Seeds,,60,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,28,-13,4/24/2025,5/22/2025
+Cucumber,Tasty Emperor,West Coast Seeds,2024,65,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,28,-13,4/24/2025,5/22/2025
+Eggplant,Ping Tung Long,West Coast Seeds,2024,,65,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
+Ground Cherry,Aunt Molly's,West Coast Seeds,2024,,70,Warm,0.5,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
+Zucchini,Desert,West Coast Seeds,2024,50,,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
+Zucchini,Jackpot,West Coast Seeds,2024,,50,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
+Beet,Detroit Dark Red,McKenzie Seeds,,60,,Cool,9,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
+Snap Peas,Sugar Daddy,West Coast Seeds,2023,60,,Cool,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
+Snow Peas,Oregon Sugar Pod II,West Coast Seeds,2025,56,,Cool,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
+Nemophila,Baby Blue-Eyes,West Coast Seeds,2024,,,Cool,3,Part Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Radish,Cherry Belle,McKenzie Seeds,,25,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Radish,Easter Egg II,West Coast Seeds,2023,28,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Radish,Halloween,McKenzie Seeds,,30,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Radish,Mini Purple Daikon,McKenzie Seeds,2023,40,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Spinach,Montrueux De Viroflay,West Coast Seeds,2024,50,,Cool,4,Full Sun,Tolerant,Direct Sow,TRUE,,41,,3/29/2025
+Carrot,Scarlet Nantes,McKenzie Seeds,,68,,Cool,16,Full Sun,Semi-tolerant,Direct Sow,TRUE,,27,,4/12/2025
+Carrot,Kuroda Nova,West Coast Seeds,2024,110,,Cool,16,Full Sun,Semi-tolerant,Direct Sow,TRUE,,27,,4/12/2025
+Parsnip,Hallow Crown Improved,McKenzie Seeds,,120,,Cool,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,27,,4/12/2025
+Corn,Peaches & Cream,West Coast Seeds,2025,70,,Warm,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,-8,,5/17/2025
+Catnip,HR1049,West Coast Seeds,2023,,,Perennial,1,Part Sun,Semi-tolerant,Direct Sow,TRUE,,-16,,5/25/2025
+Borage,HR1037,West Coast Seeds,2024,,,Warm,1,Full Sun,Not tolerant,Direct Sow,TRUE,,-16,,5/25/2025
+Dill,Annual,McKenzie Seeds,,70,,Warm,1,Full Sun,Not tolerant,Direct Sow,TRUE,,-16,,5/25/2025
+Nasturtium,Tip Top Alaska Mix,West Coast Seeds,2024,,,Warm,1,Full Sun,Not tolerant,Direct Sow,TRUE,,-16,,5/25/2025
+Nasturtium,Davenport Village,,2024,21,,Warm,1,Full Sun,Not tolerant,Direct Sow,TRUE,,-16,,5/25/2025
