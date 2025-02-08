@@ -19,7 +19,7 @@ df['Variant'] = df['Variant'].astype(str)
 df['Seed'] = df[['Seed', 'Variant']].agg(' '.join, axis=1)
 
 # Create span for direct sow
-indices = df[df["Planting Method"] == "Direct Sow"].index()
+indices = df[df["Planting Method"] == "Direct Sow"].index
 df["Start Date"].iloc[indices] = df["End Date"].iloc[indices] - pd.Timedelta(days=3)
 
 # Melt data for visualization
