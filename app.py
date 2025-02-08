@@ -10,11 +10,8 @@ df = pd.read_csv(file_path)
 df["Start Indoors"] = pd.to_datetime(df["Start Indoors"], errors='coerce')
 df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors='coerce')
 
-# Modify column names
-df.rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
-
 # Remove rows with missing dates
-df = df.dropna(subset=["Start Indoors", "Transplant / Sow"])
+df = df.dropna(subset=["Start Indoors", "Transplant / Sow"]).rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
 
 # Melt data for visualization
 df_melted = df.copy()
