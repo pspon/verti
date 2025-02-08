@@ -6,6 +6,12 @@ import plotly.express as px
 file_path = "2025-seeds.csv"
 df = pd.read_csv(file_path)
 
+# Modify column names
+df.rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
+
+print(df)
+sys.exit(2)
+
 # Convert date columns to datetime format
 df["Start Indoors"] = pd.to_datetime(df["Start Indoors"], errors='coerce')
 df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors='coerce')
