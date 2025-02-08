@@ -27,9 +27,14 @@ selected_seeds = st.multiselect("Select Seeds to Display:", distinct_seeds, defa
 # Filter data based on selection
 df_filtered = df_melted[df_melted["Seed"].isin(selected_seeds)]
 
+# Define growing season range
+growing_season_start = "2025-01-01"
+growing_season_end = "2025-12-31"
+
 # Plot timeline
 fig = px.timeline(df_filtered, x_start="Date", x_end="Date", y="Seed", color="Stage",
                   title="Planting Schedule", labels={"Stage": "Planting Stage"})
 fig.update_yaxes(categoryorder="total ascending")
+fig.update_xaxes(range=[growing_season_start, growing_season_end])
 
 st.plotly_chart(fig)
