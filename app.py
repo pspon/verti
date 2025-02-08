@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import datetime
 
 st.set_page_config(layout="wide")
 
@@ -74,8 +75,6 @@ if selected_seeds is not None and len(selected_seeds) > 0:
 growing_season_start = "2025-01-01"
 growing_season_end = "2025-10-13"
 
-#st.dataframe(df_filtered)
-
 # -------------------------------
 # Sorting Seeds by Start Date
 # -------------------------------
@@ -113,5 +112,51 @@ fig.update_layout(
 
 # Set x-axis range to cover the growing season
 fig.update_xaxes(range=[growing_season_start, growing_season_end])
+
+# -------------------------------------------
+# Add vertical line for "today"
+# -------------------------------------------
+# Get the current date (if today is outside the growing season, the line may not be visible)
+today = datetime.datetime.today().date()
+fig.add_shape(
+    dict(
+         type="line",
+         x0=today,
+         y0=0,
+         x1=today,
+         y1=1,
+         xref="x",
+         yref="paper",
+         line=dict(color="red", dash="dot", width=2)
+    )
+)
+
+# -------------------------------------------
+# Add week-by-week shaded regions
+# -------------------------------------------
+start_date = pd.to_datetime(growing_season_start)
+end_date = pd.to_datetime(growing_season_end)
+current_date = start_date
+shade_week = True  # toggle for alternating shading
+
+while current_date < end_date:
+    week_end = current_date + pd.Timedelta(days=7)
+    # Shade alternate weeks
+    if shade_week:
+         fig.add_vrect(
+             x0=current_date,
+             x1=week_end,
+             fillcolor="LightGrey",
+             opacity=0.2,
+             layer="below",
+             line_width=0,
+         )
+    shade_week = not shade_week
+    current_date = week_end
+
+# -------------------------------------------
+# Add x-axis zoom bar (range slider)
+# -------------------------------------------
+fig.update_xaxes(rangeslider_visible=True)
 
 st.plotly_chart(fig)
