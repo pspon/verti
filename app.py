@@ -70,9 +70,9 @@ if selected_seeds is not None and len(selected_seeds) > 0:
 # Growing Season Range and Data Display
 # -------------------------------
 growing_season_start = "2025-01-01"
-growing_season_end = "2025-12-31"
+growing_season_end = "2025-10-13"
 
-st.dataframe(df_filtered)
+#st.dataframe(df_filtered)
 
 # -------------------------------
 # Sorting Seeds by Start Date
