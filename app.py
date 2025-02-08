@@ -22,23 +22,61 @@ df['Seed'] = df[['Seed', 'Variant']].agg(' '.join, axis=1)
 indices = df[df["Planting Method"] == "Direct Sow"].index
 df.loc[indices, "Start Date"] = df.loc[indices, "End Date"] - pd.Timedelta(days=3)
 
-# Streamlit App Title
-st.title("Seed Planting Timeline for 2025")
+# -------------------------------
+# Sidebar Filters
+# -------------------------------
+st.sidebar.header("Filters")
 
-# Dropdown filter for seeds
+# Filter for Season (if the column exists)
+if "Season" in df.columns:
+    distinct_seasons = sorted(df["Season"].dropna().unique())
+    selected_seasons = st.sidebar.multiselect("Select Seasons:", distinct_seasons, default=distinct_seasons)
+else:
+    selected_seasons = None
+
+# Filter for Frost (if the column exists)
+if "Frost" in df.columns:
+    distinct_frost = sorted(df["Frost"].dropna().unique())
+    selected_frost = st.sidebar.multiselect("Select Frost values:", distinct_frost, default=distinct_frost)
+else:
+    selected_frost = None
+
+# Explicit filter for Planting Method (this filter controls which legend items appear)
+distinct_methods = sorted(df["Planting Method"].dropna().unique())
+selected_methods = st.sidebar.multiselect("Select Planting Methods:", distinct_methods, default=distinct_methods)
+
+# Filter for Seeds (by full seed name)
 distinct_seeds = sorted(df["Seed"].unique())
-selected_seeds = st.multiselect("Select Seeds to Display:", distinct_seeds, default=distinct_seeds)
+selected_seeds = st.sidebar.multiselect("Select Seeds to Display:", distinct_seeds, default=distinct_seeds)
 
-# Filter the DataFrame based on selection
-df_filtered = df[df["Seed"].isin(selected_seeds)]
+# -------------------------------
+# Data Filtering
+# -------------------------------
+df_filtered = df.copy()
 
-# Define the growing season range for the x-axis
+if selected_seasons is not None and len(selected_seasons) > 0:
+    df_filtered = df_filtered[df_filtered["Season"].isin(selected_seasons)]
+
+if selected_frost is not None and len(selected_frost) > 0:
+    df_filtered = df_filtered[df_filtered["Frost"].isin(selected_frost)]
+
+if selected_methods is not None and len(selected_methods) > 0:
+    df_filtered = df_filtered[df_filtered["Planting Method"].isin(selected_methods)]
+
+if selected_seeds is not None and len(selected_seeds) > 0:
+    df_filtered = df_filtered[df_filtered["Seed"].isin(selected_seeds)]
+
+# -------------------------------
+# Growing Season Range and Data Display
+# -------------------------------
 growing_season_start = "2025-01-01"
 growing_season_end = "2025-12-31"
 
 st.dataframe(df_filtered)
 
-# Determine the ordering of seeds by their earliest start date
+# -------------------------------
+# Sorting Seeds by Start Date
+# -------------------------------
 ordered_seeds = (
     df_filtered.groupby("Seed")["Start Date"]
     .min()
@@ -47,7 +85,9 @@ ordered_seeds = (
     .tolist()
 )
 
-# Create the timeline chart and specify the ordering of the y-axis
+# -------------------------------
+# Create Timeline Chart
+# -------------------------------
 fig = px.timeline(
     df_filtered, 
     x_start="Start Date", 
@@ -56,20 +96,20 @@ fig = px.timeline(
     color="Planting Method",
     title="Planting Schedule", 
     labels={"Planting Method": "Planting Stage"},
-    category_orders={"Seed": ordered_seeds}  # This orders the y-axis by start date
+    category_orders={"Seed": ordered_seeds}  # orders y-axis by earliest start date
 )
 
-# Optionally, adjust figure height based on the number of seeds
+# Adjust the figure height based on the number of seeds (40px per seed, minimum 600px)
 num_seeds = df_filtered["Seed"].nunique()
 fig.update_layout(height=max(600, 40 * num_seeds))
 
-# Expand left margin and enable automargin so that long labels are fully visible
+# Increase left margin and enable automargin for long y-axis labels
 fig.update_layout(
     margin=dict(l=200, r=20, t=50, b=20),
     yaxis=dict(automargin=True)
 )
 
-# Set the x-axis range to the growing season dates
+# Set x-axis range to cover the growing season
 fig.update_xaxes(range=[growing_season_start, growing_season_end])
 
 st.plotly_chart(fig)
