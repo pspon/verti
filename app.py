@@ -11,7 +11,7 @@ df["Start Indoors"] = pd.to_datetime(df["Start Indoors"], errors='coerce')
 df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors='coerce')
 
 # Remove rows with missing dates
-df = df.dropna(subset=["Start Indoors", "Transplant / Sow"]).rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
+df = df.rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
 
 # Create full name
 df['Seed'] = df['Seed'].astype(str)
