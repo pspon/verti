@@ -13,6 +13,9 @@ df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors='coerce')
 # Remove rows with missing dates
 df = df.dropna(subset=["Start Indoors", "Transplant / Sow"])
 
+# Adjust the dates slightly to create valid bars
+df["Transplant / Sow"] = df["Transplant / Sow"] + pd.Timedelta(days=1)
+
 # Melt data for visualization
 df_melted = df.melt(id_vars=["Seed"], value_vars=["Start Indoors", "Transplant / Sow"],
                      var_name="Stage", value_name="Date")
