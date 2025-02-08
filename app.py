@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+st.set_page_config(layout="wide")
+
 # Load the dataset
 file_path = "2025-seeds.csv"
 df = pd.read_csv(file_path)
