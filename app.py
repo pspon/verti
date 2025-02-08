@@ -38,8 +38,8 @@ growing_season_end = "2025-12-31"
 st.dataframe(df_filtered)
 
 # Plot timeline
-fig = px.timeline(df_filtered, x_start="Start Date", x_end="End Date", y="Seed",
-                  title="Planting Schedule")
+fig = px.timeline(df_filtered, x_start="Start Date", x_end="End Date", y="Seed", color="Planting Method",
+                  title="Planting Schedule", labels={"Planting Method": "Planting Stage"})
 fig.update_yaxes(categoryorder="total ascending")
 fig.update_xaxes(range=[growing_season_start, growing_season_end])
 
