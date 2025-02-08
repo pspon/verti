@@ -14,7 +14,7 @@ df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors='coerce')
 df = df.dropna(subset=["Start Indoors", "Transplant / Sow"]).rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
 
 # Create full name
-df['Seed'] = df['Seed']+' '+df['Variant'] 
+df['Seed'] = df[['Seed', 'Variant']].agg(' '.join, axis=1)
 
 # Melt data for visualization
 df_melted = df.copy()
