@@ -34,6 +34,8 @@ df_filtered = df_melted[df_melted["Seed"].isin(selected_seeds)]
 growing_season_start = "2025-01-01"
 growing_season_end = "2025-12-31"
 
+st.dataframe(df_filtered)
+
 # Plot timeline
 fig = px.timeline(df_filtered, x_start="Date", x_end="Date", y="Seed", color="Stage",
                   title="Planting Schedule", labels={"Stage": "Planting Stage"})
