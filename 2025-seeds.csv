@@ -1,4 +1,5 @@
 Seed,Variant,Brand,Year,Days,Days (after transplant),Season,Per Square,Sun,Frost,Planting Method,Plant in 2025,Transplant Delta,Last Frost Delta,Start Indoors,Transplant / Sow
+Alyssum,Snow Cloth,West Coast Seeds,2024,50,,Warm,2,Part to Full,Not tolerant,Direct Sow,TRUE,,18,,4/21/2025
 Basil,Genovese O Comune,McKenzie Seeds,,85,,Warm,4,Full Sun,Not tolerant,Transplant,TRUE,110,0,1/19/2025,5/9/2025
 Basil,Sweet,McKenzie Seeds,,85,,Warm,4,Full Sun,Not tolerant,Transplant,TRUE,110,0,1/19/2025,5/9/2025
 Bokchoy,Cantong White,McKenzie Seeds,,50,,Cool,2,Full Sun,Tolerant,Transplant,TRUE,17,49,3/4/2025,3/21/2025
@@ -8,7 +9,7 @@ Lettuce,Buttercrunch,McKenzie Seeds,,70,,Cool,4,Full Sun,Semi-tolerant,Transplan
 Garlic Chives,HR1070,West Coast Seeds,2023; 2024,,,Perennial,4,Full Sun,Tolerant,Transplant,TRUE,16,49,3/5/2025,3/21/2025
 Tomato,Sweet Million,West Coast Seeds,2024,,65,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,65,0,3/5/2025,5/9/2025
 Tomato,Big Beef,Renee's Garden,2024,,75,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,65,0,3/5/2025,5/9/2025
-Forget-me-nots,Azure Bluebirds,Renee's Garden,2024,90,,Cool,16,Full Sun,Tolerant,Transplant,TRUE,57,6,3/7/2025,5/3/2025
+Forget-me-nots,Azure Bluebirds,Renee's Garden,2024,90,,Cool,16,Full Sun,Tolerant,Direct Sow,TRUE,57,6,3/7/2025,5/3/2025
 Marigold,Davenport Village,,2024,,,Warm,1,Full Sun,Not tolerant,Transplant,TRUE,57,6,3/7/2025,5/3/2025
 Green Onion,Annual Bunching,McKenzie Seeds,,75,,Cool,4,Full Sun,Tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
 Green Onion,White Lisbon Bunching,McKenzie Seeds,,80,,Cool,4,Full Sun,Tolerant,Transplant,TRUE,21,21,3/28/2025,4/18/2025
@@ -23,6 +24,7 @@ Eggplant,Ping Tung Long,West Coast Seeds,2024,,65,Warm,1,Full Sun,Not tolerant,T
 Ground Cherry,Aunt Molly's,West Coast Seeds,2024,,70,Warm,0.5,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
 Zucchini,Desert,West Coast Seeds,2024,50,,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
 Zucchini,Jackpot,West Coast Seeds,2024,,50,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
+Zucchini,Yellowfin,West Coast Seeds,2024,,50,Warm,0.25,Full Sun,Not tolerant,Transplant,TRUE,42,-27,4/24/2025,6/5/2025
 Beet,Detroit Dark Red,McKenzie Seeds,,60,,Cool,9,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
 Snap Peas,Sugar Daddy,West Coast Seeds,2023,60,,Cool,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
 Snow Peas,Oregon Sugar Pod II,West Coast Seeds,2025,56,,Cool,4,Full Sun,Semi-tolerant,Direct Sow,TRUE,,54,,3/16/2025
