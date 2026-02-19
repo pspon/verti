@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Raised Bed 1",
+    "width": 4.0,
+    "length": 8.0,
+    "type": "Raised Bed",
+    "sun": "Full Sun (6+ hrs)",
+    "plants": [
+      "Alyssum",
+      "Beet",
+      "Borage"
+    ]
+  }
+]

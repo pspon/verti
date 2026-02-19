@@ -1,0 +1,189 @@
+{
+  "companions": {
+    "Tomato": {
+      "good": ["Basil", "Carrot", "Parsley", "Marigold", "Borage", "Nasturtium", "Sage"],
+      "bad": ["Beet", "Corn", "Fennel", "Bokchoy"],
+      "notes": "Basil repels aphids and improves flavor. Marigold deters nematodes."
+    },
+    "Basil": {
+      "good": ["Tomato", "Pepper", "Marigold", "Lettuce"],
+      "bad": ["Sage"],
+      "notes": "Great companion for tomatoes. Repels aphids, mosquitoes, and flies."
+    },
+    "Carrot": {
+      "good": ["Tomato", "Lettuce", "Radish", "Sage", "Parsley", "Dill"],
+      "bad": ["Parsnip", "Beet"],
+      "notes": "Tomatoes repel carrot fly. Sage improves carrot growth."
+    },
+    "Lettuce": {
+      "good": ["Carrot", "Radish", "Strawberry", "Basil", "Beet", "Spinach"],
+      "bad": ["Parsley", "Celery"],
+      "notes": "Radishes loosen soil around lettuce roots. Tall plants provide shade."
+    },
+    "Radish": {
+      "good": ["Carrot", "Lettuce", "Spinach", "Beet", "Cucumber", "Nasturtium"],
+      "bad": ["Hyssop"],
+      "notes": "Radishes act as trap crops for flea beetles. Good row markers."
+    },
+    "Cucumber": {
+      "good": ["Corn", "Radish", "Lettuce", "Dill", "Nasturtium", "Borage"],
+      "bad": ["Sage", "Basil", "Tomato"],
+      "notes": "Nasturtium deters aphids. Borage deters tomato hornworm and improves growth."
+    },
+    "Beet": {
+      "good": ["Lettuce", "Radish", "Spinach", "Garlic Chives"],
+      "bad": ["Tomato", "Runner Beans", "Corn"],
+      "notes": "Beet leaves add minerals to compost. Good ground cover."
+    },
+    "Spinach": {
+      "good": ["Radish", "Lettuce", "Beet", "Carrot"],
+      "bad": [],
+      "notes": "Spinach is a good cool season companion for many plants."
+    },
+    "Marigold": {
+      "good": ["Tomato", "Basil", "Carrot", "Cucumber", "Eggplant", "Zucchini"],
+      "bad": [],
+      "notes": "Deters nematodes, aphids, and whiteflies. Use French marigolds especially."
+    },
+    "Nasturtium": {
+      "good": ["Tomato", "Cucumber", "Zucchini", "Radish", "Carrot"],
+      "bad": [],
+      "notes": "Acts as a trap crop for aphids. Edible flowers and leaves."
+    },
+    "Dill": {
+      "good": ["Carrot", "Cucumber", "Lettuce"],
+      "bad": ["Tomato", "Basil", "Fennel"],
+      "notes": "Dill can cross-pollinate with carrot. Attracts beneficial insects."
+    },
+    "Parsley": {
+      "good": ["Tomato", "Carrot", "Corn", "Asparagus"],
+      "bad": ["Lettuce", "Mint"],
+      "notes": "Parsley attracts beneficial insects. Good border plant."
+    },
+    "Borage": {
+      "good": ["Tomato", "Cucumber", "Zucchini", "Strawberry"],
+      "bad": [],
+      "notes": "Deters tomato hornworm and cabbage worms. Attracts pollinators."
+    },
+    "Sage": {
+      "good": ["Carrot", "Tomato", "Brassicas", "Rosemary"],
+      "bad": ["Cucumber", "Basil"],
+      "notes": "Repels carrot fly, cabbage moth, and black flea beetles."
+    },
+    "Garlic Chives": {
+      "good": ["Tomato", "Carrot", "Beet", "Lettuce", "Corn"],
+      "bad": [],
+      "notes": "Deters aphids and Japanese beetles. Has antifungal properties."
+    },
+    "Corn": {
+      "good": ["Cucumber", "Squash", "Beans", "Parsley"],
+      "bad": ["Tomato", "Beet"],
+      "notes": "Part of the Three Sisters (corn, beans, squash). Provides structure."
+    },
+    "Zucchini": {
+      "good": ["Corn", "Marigold", "Nasturtium", "Borage"],
+      "bad": [],
+      "notes": "Borage deters squash bugs. Marigolds deter aphids."
+    },
+    "Eggplant": {
+      "good": ["Marigold", "Pepper", "Spinach", "Thyme"],
+      "bad": ["Fennel"],
+      "notes": "Marigolds deter nematodes that affect eggplant roots."
+    },
+    "Bokchoy": {
+      "good": ["Beet", "Spinach", "Garlic Chives"],
+      "bad": ["Tomato", "Strawberry", "Corn"],
+      "notes": "Garlic chives help deter aphids from brassicas."
+    },
+    "Snap Peas": {
+      "good": ["Carrot", "Radish", "Lettuce", "Spinach", "Mint"],
+      "bad": ["Garlic Chives", "Beet"],
+      "notes": "Peas fix nitrogen in soil. Good for heavy feeders nearby."
+    },
+    "Snow Peas": {
+      "good": ["Carrot", "Radish", "Lettuce", "Spinach"],
+      "bad": ["Garlic Chives", "Beet"],
+      "notes": "Nitrogen fixers. Plant with root vegetables."
+    },
+    "Ground Cherry": {
+      "good": ["Basil", "Marigold", "Borage"],
+      "bad": ["Brassicas", "Fennel"],
+      "notes": "Related to tomatoes, similar companion preferences."
+    }
+  },
+  "spacing_guide": {
+    "Tomato": {"spacing_in": 24, "row_spacing_in": 36, "depth_in": 0.5},
+    "Basil": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Carrot": {"spacing_in": 3, "row_spacing_in": 12, "depth_in": 0.25},
+    "Lettuce": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Radish": {"spacing_in": 2, "row_spacing_in": 6, "depth_in": 0.5},
+    "Cucumber": {"spacing_in": 12, "row_spacing_in": 36, "depth_in": 0.5},
+    "Beet": {"spacing_in": 4, "row_spacing_in": 12, "depth_in": 0.5},
+    "Spinach": {"spacing_in": 4, "row_spacing_in": 12, "depth_in": 0.5},
+    "Marigold": {"spacing_in": 9, "row_spacing_in": 12, "depth_in": 0.25},
+    "Nasturtium": {"spacing_in": 10, "row_spacing_in": 18, "depth_in": 0.5},
+    "Dill": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Parsley": {"spacing_in": 8, "row_spacing_in": 12, "depth_in": 0.25},
+    "Borage": {"spacing_in": 12, "row_spacing_in": 18, "depth_in": 0.5},
+    "Sage": {"spacing_in": 18, "row_spacing_in": 24, "depth_in": 0.25},
+    "Garlic Chives": {"spacing_in": 4, "row_spacing_in": 12, "depth_in": 0.25},
+    "Corn": {"spacing_in": 12, "row_spacing_in": 36, "depth_in": 1.0},
+    "Zucchini": {"spacing_in": 24, "row_spacing_in": 48, "depth_in": 1.0},
+    "Eggplant": {"spacing_in": 18, "row_spacing_in": 30, "depth_in": 0.25},
+    "Bokchoy": {"spacing_in": 8, "row_spacing_in": 12, "depth_in": 0.25},
+    "Snap Peas": {"spacing_in": 3, "row_spacing_in": 24, "depth_in": 1.0},
+    "Snow Peas": {"spacing_in": 3, "row_spacing_in": 24, "depth_in": 1.0},
+    "Ground Cherry": {"spacing_in": 24, "row_spacing_in": 36, "depth_in": 0.25},
+    "Parsnip": {"spacing_in": 3, "row_spacing_in": 12, "depth_in": 0.5},
+    "Alyssum": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Shiso": {"spacing_in": 12, "row_spacing_in": 18, "depth_in": 0.25},
+    "Catmint": {"spacing_in": 18, "row_spacing_in": 24, "depth_in": 0.25},
+    "Catnip": {"spacing_in": 18, "row_spacing_in": 24, "depth_in": 0.25},
+    "Forget-me-nots": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Nemophila": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Green Onion": {"spacing_in": 3, "row_spacing_in": 6, "depth_in": 0.5}
+  },
+  "plant_colors": {
+    "Tomato": "#e74c3c",
+    "Basil": "#27ae60",
+    "Carrot": "#e67e22",
+    "Lettuce": "#2ecc71",
+    "Radish": "#e91e63",
+    "Cucumber": "#4caf50",
+    "Beet": "#9b2335",
+    "Spinach": "#1a7a4a",
+    "Marigold": "#f39c12",
+    "Nasturtium": "#ff5722",
+    "Dill": "#8bc34a",
+    "Parsley": "#388e3c",
+    "Borage": "#3f51b5",
+    "Sage": "#9c8b5a",
+    "Garlic Chives": "#795548",
+    "Corn": "#ffeb3b",
+    "Zucchini": "#009688",
+    "Eggplant": "#673ab7",
+    "Bokchoy": "#66bb6a",
+    "Snap Peas": "#a5d6a7",
+    "Snow Peas": "#c8e6c9",
+    "Ground Cherry": "#ff9800",
+    "Parsnip": "#bcaaa4",
+    "Alyssum": "#f8bbd0",
+    "Shiso": "#7b1fa2",
+    "Catmint": "#b39ddb",
+    "Catnip": "#ce93d8",
+    "Forget-me-nots": "#42a5f5",
+    "Nemophila": "#90caf9",
+    "Green Onion": "#dce775"
+  },
+  "sun_icons": {
+    "Full Sun": "☀️",
+    "Part Sun": "⛅",
+    "Part to Full": "🌤️",
+    "Shade": "🌥️"
+  },
+  "frost_icons": {
+    "Tolerant": "❄️",
+    "Semi-tolerant": "🌡️",
+    "Not tolerant": "🔥"
+  }
+}

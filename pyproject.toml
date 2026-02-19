@@ -1,0 +1,33 @@
+[project]
+name = "verti-garden-planner"
+version = "1.0.0"
+description = "A comprehensive gardening planner with scheduling, space planning, and seed management"
+authors = [
+    {name = "Verti Garden"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.32.0",
+    "pandas>=2.0.0",
+    "plotly>=5.17.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+    "python-dateutil>=2.8.0",
+    "altair>=5.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.3.0",
+]
+
+[project.scripts]
+dev = "streamlit run app.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
