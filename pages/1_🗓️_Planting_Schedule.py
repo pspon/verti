@@ -61,7 +61,7 @@ df_full["Bed"] = df_full["Display Name"].map(bed_lookup).fillna("Unassigned")
 st.sidebar.header("🔍 Filters")
 
 year = st.sidebar.number_input(
-    "Growing Year", min_value=2020, max_value=2030, value=2025, step=1
+    "Growing Year", min_value=2020, max_value=2030, value=year, step=1
 )
 season_start = f"{year}-01-01"
 season_end   = f"{year}-10-13"
