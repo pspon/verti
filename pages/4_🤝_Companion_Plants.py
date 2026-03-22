@@ -28,7 +28,7 @@ sidebar_nav()
 st.title("🤝 Companion Planting Guide")
 st.caption("Discover which plants grow best together — and which to keep apart.")
 
-year = 2025  # Default year
+year = 2026  # Default year
 df = load_seeds_df(year)
 companion_data = load_companion_data()
 companions = companion_data.get("companions", {})

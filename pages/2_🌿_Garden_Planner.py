@@ -35,7 +35,7 @@ sidebar_nav()
 st.title("🌿 Garden Space Planner")
 st.caption("Design your beds, calculate spacing, and check companion planting compatibility.")
 
-year = 2025  # Default year
+year = 2026  # Default year
 df = load_seeds_df(year)
 companion_data = load_companion_data()
 beds = load_garden_beds()
@@ -58,22 +58,61 @@ with tab_beds:
     with col_left:
         st.subheader("Add / Edit Bed")
 
-        bed_name = st.text_input("Bed Name", value="Raised Bed 1")
-        bed_width = st.number_input("Width (feet)", min_value=1.0, max_value=20.0, value=4.0, step=0.5)
-        bed_length = st.number_input("Length (feet)", min_value=1.0, max_value=40.0, value=8.0, step=0.5)
-        bed_type = st.selectbox("Bed Type", ["Raised Bed", "In-Ground", "Container", "Vertical"])
+        # Option to edit existing bed or create new one
+        bed_names = [bed["name"] for bed in beds]
+        edit_mode = st.selectbox(
+            "Select Action",
+            ["➕ Create New Bed"] + [f"✏️ Edit: {name}" for name in bed_names],
+            key="bed_edit_mode"
+        )
+
+        # Determine if editing or creating
+        is_editing = edit_mode.startswith("✏️ Edit:")
+        selected_bed = None
+        if is_editing:
+            selected_bed_name = edit_mode.replace("✏️ Edit: ", "")
+            selected_bed = next((bed for bed in beds if bed["name"] == selected_bed_name), None)
+
+        # Set default values based on mode
+        if is_editing and selected_bed:
+            default_name = selected_bed["name"]
+            default_width = selected_bed["width"]
+            default_length = selected_bed["length"]
+            default_type = selected_bed["type"]
+            default_sun = selected_bed["sun"]
+            default_plants = selected_bed.get("plants", [])
+        else:
+            default_name = "Raised Bed 1"
+            default_width = 4.0
+            default_length = 8.0
+            default_type = "Raised Bed"
+            default_sun = "Full Sun (6+ hrs)"
+            default_plants = []
+
+        bed_name = st.text_input("Bed Name", value=default_name)
+        bed_width = st.number_input("Width (feet)", min_value=1.0, max_value=20.0, value=default_width, step=0.5)
+        bed_length = st.number_input("Length (feet)", min_value=1.0, max_value=40.0, value=default_length, step=0.5)
+        bed_type = st.selectbox(
+            "Bed Type", 
+            ["Raised Bed", "In-Ground", "Container", "Vertical"],
+            index=["Raised Bed", "In-Ground", "Container", "Vertical"].index(default_type)
+        )
         sun_exposure = st.selectbox(
-            "Sun Exposure", ["Full Sun (6+ hrs)", "Part Sun (3-6 hrs)", "Shade (<3 hrs)"]
+            "Sun Exposure", 
+            ["Full Sun (6+ hrs)", "Part Sun (3-6 hrs)", "Shade (<3 hrs)"],
+            index=["Full Sun (6+ hrs)", "Part Sun (3-6 hrs)", "Shade (<3 hrs)"].index(default_sun)
         )
 
         # Plant selection for this bed
         selected_plants = st.multiselect(
             "Plants in this bed",
             plant_list,
+            default=default_plants,
             help="Select plants to assign to this bed",
         )
 
-        if st.button("➕ Add / Update Bed", type="primary"):
+        button_label = "💾 Update Bed" if is_editing else "➕ Add Bed"
+        if st.button(button_label, type="primary"):
             bed_entry = {
                 "name": bed_name,
                 "width": bed_width,
@@ -82,11 +121,12 @@ with tab_beds:
                 "sun": sun_exposure,
                 "plants": selected_plants,
             }
-            # Update if name exists, else append
-            existing = next((i for i, b in enumerate(beds) if b["name"] == bed_name), None)
-            if existing is not None:
-                beds[existing] = bed_entry
-                st.success(f"Updated bed: **{bed_name}**")
+            # Update if editing, else append
+            if is_editing and selected_bed:
+                existing = next((i for i, b in enumerate(beds) if b["name"] == selected_bed_name), None)
+                if existing is not None:
+                    beds[existing] = bed_entry
+                    st.success(f"Updated bed: **{bed_name}**")
             else:
                 beds.append(bed_entry)
                 st.success(f"Added bed: **{bed_name}**")

@@ -85,7 +85,7 @@
   },
   "Spinach Seaside F1": {
     "start_status": "in_progress",
-    "transplant_status": "not_started",
+    "transplant_status": "in_progress",
     "notes": "",
     "bed": "Vegtrug"
   },
@@ -130,5 +130,35 @@
     "transplant_status": "skipped",
     "notes": "",
     "bed": ""
+  },
+  "Beet Touchstone Gold": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Beet Detroit Dark Red": {
+    "start_status": "skipped",
+    "transplant_status": "skipped",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Snow Peas Oregon Sugar Pod II": {
+    "start_status": "in_progress",
+    "transplant_status": "in_progress",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Snap Peas Sugar Daddy": {
+    "start_status": "in_progress",
+    "transplant_status": "in_progress",
+    "notes": "",
+    "bed": "Vegtrug"
+  },
+  "Spinach Montrueux De Viroflay": {
+    "start_status": "skipped",
+    "transplant_status": "skipped",
+    "notes": "",
+    "bed": "Vegtrug"
   }
 }

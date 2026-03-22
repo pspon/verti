@@ -32,7 +32,7 @@ sidebar_nav()
 st.title("📈 Analytics & Harvest Tracker")
 st.caption("Track your harvests, analyze yields, and get insights about your garden.")
 
-year = 2025  # Default year
+year = 2026  # Default year
 df = load_seeds_df(year)
 harvest_df = load_harvest_log()
 companion_data = load_companion_data()

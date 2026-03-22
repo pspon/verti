@@ -1,114 +1,114 @@
 {
   "companions": {
     "Tomato": {
-      "good": ["Basil", "Carrot", "Parsley", "Marigold", "Borage", "Nasturtium", "Sage"],
-      "bad": ["Beet", "Corn", "Fennel", "Bokchoy"],
-      "notes": "Basil repels aphids and improves flavor. Marigold deters nematodes."
+      "good": ["Asparagus", "Basil", "Borage", "Carrots", "Celery", "Chives", "Garlic", "Marigolds", "Monarda", "Nasturtiums", "Onions", "Parsley", "Peppers", "Sage", "Chamomile"],
+      "bad": ["Brassicas", "Corn", "Dill", "Fennel", "Kohlrabi", "Potatoes"],
+      "notes": "Basil improves flavor and vigor. Asparagus repels nematodes. Marigold repels whitefly/nematodes. Avoid Dill and Corn as they can stunt growth."
     },
     "Basil": {
-      "good": ["Tomato", "Pepper", "Marigold", "Lettuce"],
-      "bad": ["Sage"],
-      "notes": "Great companion for tomatoes. Repels aphids, mosquitoes, and flies."
+      "good": ["Tomato", "Asparagus", "Oregano", "Peppers"],
+      "bad": ["Sage", "Cucumber"],
+      "notes": "Improves vigor and flavor of tomatoes. Repels aphids, mites, flies, and mosquitoes."
     },
     "Carrot": {
-      "good": ["Tomato", "Lettuce", "Radish", "Sage", "Parsley", "Dill"],
-      "bad": ["Parsnip", "Beet"],
-      "notes": "Tomatoes repel carrot fly. Sage improves carrot growth."
+      "good": ["Tomatoes", "Leeks", "Onions", "Rosemary", "Sage", "Wormwood", "Lettuce", "Radish", "Parsley"],
+      "bad": ["Dill", "Parsnips", "Potatoes"],
+      "notes": "Leeks and onions repel carrot rust fly. Sage improves growth. Avoid Dill as it inhibits carrot development."
     },
     "Lettuce": {
-      "good": ["Carrot", "Radish", "Strawberry", "Basil", "Beet", "Spinach"],
-      "bad": ["Parsley", "Celery"],
-      "notes": "Radishes loosen soil around lettuce roots. Tall plants provide shade."
+      "good": ["Beets", "Brassicas", "Carrot", "Celery", "Chervil", "Cucumbers", "Dill", "Garlic", "Onions", "Radish", "Spinach", "Squash", "Strawberries", "Basil"],
+      "bad": ["Parsley", "Broccoli"],
+      "notes": "Broccoli root exudates can hinder lettuce germination. Celery and Dill are excellent neighbors."
     },
     "Radish": {
-      "good": ["Carrot", "Lettuce", "Spinach", "Beet", "Cucumber", "Nasturtium"],
-      "bad": ["Hyssop"],
-      "notes": "Radishes act as trap crops for flea beetles. Good row markers."
+      "good": ["Beans", "Beets", "Carrots", "Chervil", "Cucumbers", "Lettuce", "Melons", "Nasturtiums", "Parsnips", "Peas", "Spinach", "Squash", "Tomatoes"],
+      "bad": ["Agastache", "Hyssop"],
+      "notes": "Excellent trap crop for flea beetles. Avoid planting near Agastache or Hyssop."
     },
     "Cucumber": {
-      "good": ["Corn", "Radish", "Lettuce", "Dill", "Nasturtium", "Borage"],
-      "bad": ["Sage", "Basil", "Tomato"],
-      "notes": "Nasturtium deters aphids. Borage deters tomato hornworm and improves growth."
+      "good": ["Asparagus", "Beans", "Brassicas", "Celery", "Corn", "Dill", "Kohlrabi", "Lettuce", "Onion", "Peas", "Radish", "Tomatoes", "Nasturtium", "Borage"],
+      "bad": ["Potatoes", "Sage", "Basil"],
+      "notes": "Corn and Sunflowers act as trellises. Borage improves pollination. Avoid Sage and Basil."
     },
     "Beet": {
-      "good": ["Lettuce", "Radish", "Spinach", "Garlic Chives"],
-      "bad": ["Tomato", "Runner Beans", "Corn"],
-      "notes": "Beet leaves add minerals to compost. Good ground cover."
+      "good": ["Bush beans", "Brassicas", "Corn", "Garlic", "Kohlrabi", "Leeks", "Lettuce", "Mint", "Radish", "Spinach"],
+      "bad": ["Pole beans", "Runner beans"],
+      "notes": "Corn provides beneficial shelter. Avoid pole beans as they stunt each other's growth."
     },
     "Spinach": {
-      "good": ["Radish", "Lettuce", "Beet", "Carrot"],
-      "bad": [],
-      "notes": "Spinach is a good cool season companion for many plants."
+      "good": ["Beets", "Brassicas", "Carrot", "Celery", "Leek", "Lettuce", "Onion", "Radish", "Strawberry"],
+      "bad": ["Garlic Chives"],
+      "notes": "A versatile cool-season companion for many crops. Avoid Garlic Chives."
     },
     "Marigold": {
-      "good": ["Tomato", "Basil", "Carrot", "Cucumber", "Eggplant", "Zucchini"],
-      "bad": [],
-      "notes": "Deters nematodes, aphids, and whiteflies. Use French marigolds especially."
+      "good": ["Tomato", "Asparagus", "Basil", "Cucumber", "Eggplant", "Zucchini", "Melon", "Carrot"],
+      "bad": ["Beans"],
+      "notes": "Deters nematodes and whiteflies. Avoid planting near beans."
     },
     "Nasturtium": {
-      "good": ["Tomato", "Cucumber", "Zucchini", "Radish", "Carrot"],
+      "good": ["Tomato", "Cucumber", "Zucchini", "Radish", "Carrot", "Brassicas", "Melons"],
       "bad": [],
-      "notes": "Acts as a trap crop for aphids. Edible flowers and leaves."
+      "notes": "Acts as a trap crop for aphids. Deters cucumber beetles and squash bugs."
     },
     "Dill": {
-      "good": ["Carrot", "Cucumber", "Lettuce"],
-      "bad": ["Tomato", "Basil", "Fennel"],
-      "notes": "Dill can cross-pollinate with carrot. Attracts beneficial insects."
+      "good": ["Cabbage", "Corn", "Cucumbers", "Lettuce", "Onions", "Brassicas"],
+      "bad": ["Carrots", "Tomatoes", "Basil", "Fennel"],
+      "notes": "Attracts beneficial insects. Avoid planting near carrots as it inhibits their growth."
     },
     "Parsley": {
-      "good": ["Tomato", "Carrot", "Corn", "Asparagus"],
-      "bad": ["Lettuce", "Mint"],
-      "notes": "Parsley attracts beneficial insects. Good border plant."
+      "good": ["Asparagus", "Carrots", "Corn", "Roses", "Tomatoes"],
+      "bad": ["Mint", "Lettuce"],
+      "notes": "Attracts beneficial insects and is a good border plant. Avoid Mint and Lettuce."
     },
     "Borage": {
-      "good": ["Tomato", "Cucumber", "Zucchini", "Strawberry"],
+      "good": ["Tomato", "Cucumber", "Zucchini", "Strawberry", "Squash"],
       "bad": [],
-      "notes": "Deters tomato hornworm and cabbage worms. Attracts pollinators."
+      "notes": "Deters tomato hornworm and cabbage worms. Improves pollination for squash and strawberries."
     },
     "Sage": {
-      "good": ["Carrot", "Tomato", "Brassicas", "Rosemary"],
-      "bad": ["Cucumber", "Basil"],
-      "notes": "Repels carrot fly, cabbage moth, and black flea beetles."
+      "good": ["Broccoli", "Cabbage", "Carrots", "Cauliflower", "Kale", "Kohlrabi", "Tomatoes", "Rosemary"],
+      "bad": ["Cucumber", "Onions", "Basil"],
+      "notes": "Repels carrot fly and cabbage moth. Avoid planting near Cucumber and Onions."
     },
     "Garlic Chives": {
       "good": ["Tomato", "Carrot", "Beet", "Lettuce", "Corn"],
-      "bad": [],
-      "notes": "Deters aphids and Japanese beetles. Has antifungal properties."
+      "bad": ["Snap Peas", "Snow Peas", "Spinach"],
+      "notes": "Deters aphids and Japanese beetles. Avoid planting near peas as alliums stunt their growth."
     },
     "Corn": {
-      "good": ["Cucumber", "Squash", "Beans", "Parsley"],
-      "bad": ["Tomato", "Beet"],
-      "notes": "Part of the Three Sisters (corn, beans, squash). Provides structure."
+      "good": ["Cucumber", "Squash", "Beans", "Peas", "Potatoes", "Pumpkin", "Melon", "Amaranth", "Beet", "Parsley"],
+      "bad": ["Tomato", "Celery"],
+      "notes": "Beans fix nitrogen for corn. Amaranth helps shade soil. Avoid Tomato due to shared pests."
     },
     "Zucchini": {
-      "good": ["Corn", "Marigold", "Nasturtium", "Borage"],
-      "bad": [],
-      "notes": "Borage deters squash bugs. Marigolds deter aphids."
+      "good": ["Corn", "Marigold", "Nasturtium", "Borage", "Peas", "Squash"],
+      "bad": ["Potatoes"],
+      "notes": "Borage attracts pollinators. Marigolds deter aphids. Avoid Potatoes."
     },
     "Eggplant": {
-      "good": ["Marigold", "Pepper", "Spinach", "Thyme"],
+      "good": ["Marigold", "Pepper", "Spinach", "Thyme", "Amaranth", "Beans", "Peas"],
       "bad": ["Fennel"],
-      "notes": "Marigolds deter nematodes that affect eggplant roots."
+      "notes": "Marigolds deter nematodes. Amaranth and Beans provide support and nitrogen."
     },
     "Bokchoy": {
-      "good": ["Beet", "Spinach", "Garlic Chives"],
-      "bad": ["Tomato", "Strawberry", "Corn"],
-      "notes": "Garlic chives help deter aphids from brassicas."
+      "good": ["Beet", "Spinach", "Chamomile", "Dill", "Mint", "Rosemary", "Sage", "Agastache", "Alyssum", "Borage"],
+      "bad": ["Tomato", "Strawberry", "Corn", "Eggplant", "Peppers", "Potatoes"],
+      "notes": "Dill and Mint repel cabbage moths. Avoid Solanaceous plants like Tomatoes."
     },
     "Snap Peas": {
-      "good": ["Carrot", "Radish", "Lettuce", "Spinach", "Mint"],
-      "bad": ["Garlic Chives", "Beet"],
-      "notes": "Peas fix nitrogen in soil. Good for heavy feeders nearby."
+      "good": ["Beans", "Carrots", "Celery", "Corn", "Cucumber", "Eggplant", "Lettuce", "Parsley", "Parsnip", "Potatoes", "Radish", "Spinach", "Strawberries", "Turnip", "Mint"],
+      "bad": ["Garlic", "Leeks", "Onions", "Shallots", "Garlic Chives"],
+      "notes": "Nitrogen fixers. Avoid all Alliums (Onions/Garlic) as they stunt pea growth."
     },
     "Snow Peas": {
-      "good": ["Carrot", "Radish", "Lettuce", "Spinach"],
-      "bad": ["Garlic Chives"],
-      "notes": "Nitrogen fixers. Plant with root vegetables."
+      "good": ["Beans", "Carrots", "Celery", "Corn", "Cucumber", "Eggplant", "Lettuce", "Parsley", "Parsnip", "Potatoes", "Radish", "Spinach", "Strawberries", "Turnip"],
+      "bad": ["Garlic", "Leeks", "Onions", "Shallots", "Garlic Chives"],
+      "notes": "Avoid Alliums. Nitrogen fixers beneficial for root vegetables."
     },
     "Ground Cherry": {
       "good": ["Basil", "Marigold", "Borage"],
       "bad": ["Brassicas", "Fennel"],
-      "notes": "Related to tomatoes, similar companion preferences."
+      "notes": "Follows similar companion patterns to Tomatoes."
     }
   },
   "spacing_guide": {
@@ -135,7 +135,7 @@
     "Snow Peas": {"spacing_in": 3, "row_spacing_in": 24, "depth_in": 1.0},
     "Ground Cherry": {"spacing_in": 24, "row_spacing_in": 36, "depth_in": 0.25},
     "Parsnip": {"spacing_in": 3, "row_spacing_in": 12, "depth_in": 0.5},
-    "Alyssum": {"spacing_in": 6, "row_spacing_in": 12, "depth_in": 0.25},
+    "Alyssum": {"spacing_in": 8, "row_spacing_in": 12, "depth_in": 0.25},
     "Shiso": {"spacing_in": 12, "row_spacing_in": 18, "depth_in": 0.25},
     "Catmint": {"spacing_in": 18, "row_spacing_in": 24, "depth_in": 0.25},
     "Catnip": {"spacing_in": 18, "row_spacing_in": 24, "depth_in": 0.25},

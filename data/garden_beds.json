@@ -6,9 +6,10 @@
     "type": "Raised Bed",
     "sun": "Full Sun (6+ hrs)",
     "plants": [
+      "Lettuce",
       "Snap Peas",
       "Spinach",
-      "Lettuce"
+      "Beet"
     ]
   },
   {
@@ -19,9 +20,9 @@
     "sun": "Full Sun (6+ hrs)",
     "plants": [
       "Bokchoy",
-      "Radish",
       "Beet",
-      "Snow Peas"
+      "Snow Peas",
+      "Gai Lan"
     ]
   }
 ]

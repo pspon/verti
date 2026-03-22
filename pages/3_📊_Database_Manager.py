@@ -35,7 +35,7 @@ st.title("📊 Database Manager")
 st.caption("View, edit, add, and delete your seed and planting data.")
 
 # ─── Load data ────────────────────────────────────────────────────────────────
-year = 2025  # Default year
+year = 2026  # Default year
 df = load_seeds_df(year)
 
 # ─── Tabs ──────────────────────────────────────────────────────────────────────
