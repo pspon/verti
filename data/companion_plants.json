@@ -102,7 +102,7 @@
     },
     "Snow Peas": {
       "good": ["Carrot", "Radish", "Lettuce", "Spinach"],
-      "bad": ["Garlic Chives", "Beet"],
+      "bad": ["Garlic Chives"],
       "notes": "Nitrogen fixers. Plant with root vegetables."
     },
     "Ground Cherry": {

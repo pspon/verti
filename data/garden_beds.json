@@ -1,14 +1,27 @@
 [
   {
-    "name": "Raised Bed 1",
-    "width": 4.0,
-    "length": 8.0,
+    "name": "Vegtrug",
+    "width": 2.5,
+    "length": 3.875,
     "type": "Raised Bed",
     "sun": "Full Sun (6+ hrs)",
     "plants": [
-      "Alyssum",
+      "Snap Peas",
+      "Spinach",
+      "Lettuce"
+    ]
+  },
+  {
+    "name": "Cedar",
+    "width": 1.91,
+    "length": 4.1,
+    "type": "Raised Bed",
+    "sun": "Full Sun (6+ hrs)",
+    "plants": [
+      "Bokchoy",
+      "Radish",
       "Beet",
-      "Borage"
+      "Snow Peas"
     ]
   }
 ]

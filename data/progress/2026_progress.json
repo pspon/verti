@@ -1,7 +1,133 @@
 {
   "Bokchoy Cantong White": {
+    "start_status": "skipped",
+    "transplant_status": "skipped",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Lettuce Buttercrunch": {
     "start_status": "in_progress",
     "transplant_status": "not_started",
+    "notes": "",
+    "bed": "Vegtrug"
+  },
+  "Bokchoy Taiwan Pac Choi": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Bokchoy Toy Choi": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": "Cedar"
+  },
+  "Basil Genovese O Comune": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Catnip HR1049": {
+    "start_status": "done",
+    "transplant_status": "done",
+    "notes": "",
+    "bed": ""
+  },
+  "Cilantro Calypso": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Dill Annual": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Gai Lan Crown Jade F1": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Forget-me-nots Azure Bluebirds": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Marigold Davenport Village": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Green Onion Fukagawa": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Garlic Chives HR1070": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Parsley Moss Curled": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Spinach Seaside F1": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": "Vegtrug"
+  },
+  "Turnip Hakurei": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Tomato Sweet Million": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Tomato Rubee Goddess": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Tomato Big Beef": {
+    "start_status": "skipped",
+    "transplant_status": "skipped",
+    "notes": "",
+    "bed": ""
+  },
+  "Shiso Bicolored": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Sage HR1132": {
+    "start_status": "in_progress",
+    "transplant_status": "not_started",
+    "notes": "",
+    "bed": ""
+  },
+  "Basil Sweet": {
+    "start_status": "skipped",
+    "transplant_status": "skipped",
     "notes": "",
     "bed": ""
   }
