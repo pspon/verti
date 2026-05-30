@@ -183,17 +183,29 @@ def import_progress(session) -> int:
     return count
 
 
+def _harvest_year(path, fallback: int) -> int:
+    """Derive the plan year from a harvest filename (``2025_harvest.csv`` → 2025)."""
+    prefix = path.stem.split("_")[0]
+    return int(prefix) if prefix.isdigit() else fallback
+
+
 def import_harvests(session) -> int:
     count = 0
+    fallback_year = min(
+        (int(p.stem.split("-")[0]) for p in SEEDS_DIR.glob("*-seeds.csv")),
+        default=pd.Timestamp.now().year,
+    )
     candidates = [DATA_DIR / "harvest_log.csv"]
     if HARVEST_DIR.exists():
         candidates += sorted(HARVEST_DIR.glob("*.csv"))
     for path in candidates:
         if not path.exists():
             continue
+        year = _harvest_year(path, fallback_year)
         df = pd.read_csv(path)
         for _, row in df.iterrows():
             session.add(Harvest(
+                season_year=year,
                 date=_date(row.get("Date")),
                 plant=str(row.get("Plant", "") or ""),
                 variant="" if pd.isna(row.get("Variant")) else str(row.get("Variant")),

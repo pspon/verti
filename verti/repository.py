@@ -251,9 +251,12 @@ def save_planting_rules(rules: dict) -> None:
 
 
 # ─── Harvest log ──────────────────────────────────────────────────────────────
-def get_harvest_log() -> pd.DataFrame:
+def get_harvest_log(year: Optional[int] = None) -> pd.DataFrame:
     with get_session() as s:
-        rows = s.exec(select(Harvest)).all()
+        stmt = select(Harvest)
+        if year is not None:
+            stmt = stmt.where(Harvest.season_year == year)
+        rows = s.exec(stmt).all()
     records = [
         {"Date": r.date, "Plant": r.plant, "Variant": r.variant,
          "Quantity_kg": r.quantity_kg, "Notes": r.notes}
@@ -362,6 +365,22 @@ def save_progress(progress: dict, year: int = 2025) -> None:
         s.commit()
 
 
+def set_progress_status(year: int, display_name: str, field: str, status: str) -> None:
+    """Upsert one plant's start/transplant status for a year (granular write)."""
+    init_db()
+    column = "start_status" if field == "start" else "transplant_status"
+    with get_session() as s:
+        row = s.exec(
+            select(PlantingProgress).where(
+                PlantingProgress.season_year == year,
+                PlantingProgress.display_name == display_name,
+            )
+        ).first() or PlantingProgress(season_year=year, display_name=display_name)
+        setattr(row, column, status)
+        s.add(row)
+        s.commit()
+
+
 def available_years() -> list[int]:
     """Distinct plan years present in the seed table (descending)."""
     with get_session() as s:
@@ -369,10 +388,13 @@ def available_years() -> list[int]:
 
 
 # ─── CRUD helpers for the web UI ────────────────────────────────────────────────
-def list_harvests() -> list[dict]:
-    """Harvest rows with stable ids, newest first."""
+def list_harvests(year: Optional[int] = None) -> list[dict]:
+    """Harvest rows with stable ids, newest first (optionally scoped to a year)."""
     with get_session() as s:
-        rows = s.exec(select(Harvest)).all()
+        stmt = select(Harvest)
+        if year is not None:
+            stmt = stmt.where(Harvest.season_year == year)
+        rows = s.exec(stmt).all()
     rows.sort(key=lambda r: (r.date or date.min), reverse=True)
     return [
         {"id": r.id, "date": r.date, "plant": r.plant, "variant": r.variant,
@@ -381,11 +403,15 @@ def list_harvests() -> list[dict]:
     ]
 
 
-def add_harvest(date_value, plant: str, variant: str, quantity_kg: float, notes: str = "") -> None:
+def add_harvest(date_value, plant: str, variant: str, quantity_kg: float,
+                notes: str = "", year: Optional[int] = None) -> None:
     init_db()
+    parsed = _to_date(date_value)
+    if year is None:
+        year = parsed.year if parsed else 0
     with get_session() as s:
         s.add(Harvest(
-            date=_to_date(date_value), plant=plant, variant=variant,
+            season_year=year, date=parsed, plant=plant, variant=variant,
             quantity_kg=quantity_kg, notes=notes,
         ))
         s.commit()

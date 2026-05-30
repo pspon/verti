@@ -1,0 +1,12 @@
+<form hx-post="/schedule/progress" hx-trigger="change" hx-swap="outerHTML" hx-target="this"
+      class="inline-block">
+  <input type="hidden" name="year" value="{{ year }}">
+  <input type="hidden" name="plant" value="{{ plant }}">
+  <input type="hidden" name="field" value="{{ field }}">
+  <select name="status"
+          class="border border-verti-100 rounded-lg px-2 py-1 text-sm bg-white">
+    {% for opt in status_options %}
+    <option value="{{ opt }}" {% if opt == status %}selected{% endif %}>{{ status_labels[opt] }}</option>
+    {% endfor %}
+  </select>
+</form>

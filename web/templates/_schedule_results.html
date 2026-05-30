@@ -1,5 +1,3 @@
-{% set status_labels = {'not_started':'⬜ Not Started','in_progress':'🔄 In Progress','done':'✅ Done','skipped':'⏭️ Skipped'} %}
-
 <div class="flex items-center gap-4 mb-4 text-sm text-gray-600">
   <span><b class="text-verti-700">{{ total }}</b> varieties shown</span>
   <span><b class="text-verti-700">{{ done }}</b> fully done</span>
@@ -33,8 +31,12 @@
           <td class="py-2 pr-4">{{ r.method }}</td>
           <td class="py-2 pr-4 whitespace-nowrap">{{ r.start.strftime('%b %d') if r.start else '—' }}</td>
           <td class="py-2 pr-4 whitespace-nowrap">{{ r.end.strftime('%b %d') if r.end else '—' }}</td>
-          <td class="py-2 pr-4 whitespace-nowrap">{{ status_labels[r.start_status] }}</td>
-          <td class="py-2 whitespace-nowrap">{{ status_labels[r.transplant_status] }}</td>
+          <td class="py-2 pr-4 whitespace-nowrap">
+            {% with plant=r.plant, field='start', status=r.start_status %}{% include "_progress_cell.html" %}{% endwith %}
+          </td>
+          <td class="py-2 whitespace-nowrap">
+            {% with plant=r.plant, field='transplant', status=r.transplant_status %}{% include "_progress_cell.html" %}{% endwith %}
+          </td>
         </tr>
       {% else %}
         <tr><td colspan="8" class="py-6 text-center text-gray-500">No plants match your filters.</td></tr>

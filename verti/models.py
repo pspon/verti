@@ -92,9 +92,10 @@ class PlantingProgress(SQLModel, table=True):
 
 
 class Harvest(SQLModel, table=True):
-    """A logged harvest event."""
+    """A logged harvest event within a single growing-season plan."""
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    season_year: int = Field(default=0, index=True)  # the plan year, e.g. 2025 / 2026
     date: Optional[datetime.date] = None
     plant: str = ""
     variant: str = ""
