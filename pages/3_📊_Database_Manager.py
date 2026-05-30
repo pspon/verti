@@ -15,15 +15,16 @@ import pandas as pd
 import streamlit as st
 
 from utils.helpers import (
+    get_selected_year,
+    load_companion_data,
+    load_garden_beds,
+    load_harvest_log,
+    load_planting_rules,
     load_seeds_df,
     reload_seeds,
-    load_harvest_log,
-    save_harvest_log,
-    load_garden_beds,
     save_garden_beds,
-    load_planting_rules,
+    save_harvest_log,
     save_planting_rules,
-    load_companion_data,
     setup_page,
     sidebar_nav,
 )
@@ -35,7 +36,7 @@ st.title("📊 Database Manager")
 st.caption("View, edit, add, and delete your seed and planting data.")
 
 # ─── Load data ────────────────────────────────────────────────────────────────
-year = 2026  # Default year
+year = get_selected_year()
 df = load_seeds_df(year)
 
 # ─── Tabs ──────────────────────────────────────────────────────────────────────

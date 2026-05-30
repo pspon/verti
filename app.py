@@ -238,33 +238,23 @@ st.markdown("---")
 st.subheader("🗺️ Navigate to")
 c1, c2, c3, c4, c5 = st.columns(5)
 
-card_style = (
-    "border:1px solid #C8E6C9; border-radius:10px; padding:16px; "
-    "text-align:center; background:#fff; cursor:pointer;"
-)
-
-c1.markdown(
-    f'<div style="{card_style}"><div style="font-size:2rem;">🗓️</div>'
-    "<b>Planting Schedule</b><br><small>Full timeline view</small></div>",
-    unsafe_allow_html=True,
-)
-c2.markdown(
-    f'<div style="{card_style}"><div style="font-size:2rem;">🌿</div>'
-    "<b>Garden Planner</b><br><small>Visual bed designer</small></div>",
-    unsafe_allow_html=True,
-)
-c3.markdown(
-    f'<div style="{card_style}"><div style="font-size:2rem;">📊</div>'
-    "<b>Database Manager</b><br><small>Edit seed data</small></div>",
-    unsafe_allow_html=True,
-)
-c4.markdown(
-    f'<div style="{card_style}"><div style="font-size:2rem;">🤝</div>'
-    "<b>Companion Plants</b><br><small>Planting synergies</small></div>",
-    unsafe_allow_html=True,
-)
-c5.markdown(
-    f'<div style="{card_style}"><div style="font-size:2rem;">📈</div>'
-    "<b>Analytics</b><br><small>Harvest & insights</small></div>",
-    unsafe_allow_html=True,
-)
+with c1:
+    with st.container(border=True):
+        st.page_link("pages/1_🗓️_Planting_Schedule.py", label="**Planting Schedule**", icon="🗓️")
+        st.caption("Full timeline view")
+with c2:
+    with st.container(border=True):
+        st.page_link("pages/2_🌿_Garden_Planner.py", label="**Garden Planner**", icon="🌿")
+        st.caption("Visual bed designer")
+with c3:
+    with st.container(border=True):
+        st.page_link("pages/3_📊_Database_Manager.py", label="**Database Manager**", icon="📊")
+        st.caption("Edit seed data")
+with c4:
+    with st.container(border=True):
+        st.page_link("pages/4_🤝_Companion_Plants.py", label="**Companion Plants**", icon="🤝")
+        st.caption("Planting synergies")
+with c5:
+    with st.container(border=True):
+        st.page_link("pages/5_📈_Analytics.py", label="**Analytics**", icon="📈")
+        st.caption("Harvest & insights")

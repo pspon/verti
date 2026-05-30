@@ -15,9 +15,10 @@ import streamlit as st
 from utils.helpers import (
     companion_relationship,
     get_plant_color,
+    get_selected_year,
     load_companion_data,
-    load_seeds_df,
     load_planting_rules,
+    load_seeds_df,
     setup_page,
     sidebar_nav,
 )
@@ -28,7 +29,7 @@ sidebar_nav()
 st.title("🤝 Companion Planting Guide")
 st.caption("Discover which plants grow best together — and which to keep apart.")
 
-year = 2026  # Default year
+year = get_selected_year()
 df = load_seeds_df(year)
 companion_data = load_companion_data()
 companions = companion_data.get("companions", {})

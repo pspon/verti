@@ -50,8 +50,11 @@ def reload_seeds():
 @st.cache_data(ttl=300)
 def load_companion_data() -> dict:
     """Load companion planting JSON."""
-    with open(COMPANION_JSON, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(COMPANION_JSON, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 
 @st.cache_data(ttl=60)
 def load_planting_rules() -> dict:
@@ -75,6 +78,7 @@ def load_harvest_log() -> pd.DataFrame:
 def save_harvest_log(df: pd.DataFrame):
     """Persist harvest log to CSV."""
     DATA_DIR.mkdir(exist_ok=True)
+    HARVEST_DIR.mkdir(exist_ok=True)
     df.to_csv(HARVEST_CSV, index=False)
     load_harvest_log.clear()
 
@@ -175,7 +179,7 @@ STATUS_COLORS = {
 
 
 # ─── Seeds CSV persistence ─────────────────────────────────────────────────────
-def save_seeds_df(df: pd.DataFrame):
+def save_seeds_df(df: pd.DataFrame, year: int = 2026):
     """Save the seeds dataframe back to CSV."""
     save_df = df.copy()
     # Restore original column names before saving
@@ -190,7 +194,9 @@ def save_seeds_df(df: pd.DataFrame):
             save_df[col] = dt_col.apply(
                 lambda d: f"{d.month}/{d.day}/{d.year}" if pd.notna(d) else ""
             )
-    save_df.to_csv(SEEDS_CSV, index=False)
+    seeds_csv = SEEDS_DIR / f"{year}-seeds.csv"
+    SEEDS_DIR.mkdir(exist_ok=True)
+    save_df.to_csv(seeds_csv, index=False)
     reload_seeds()
 
 
@@ -282,7 +288,6 @@ def setup_page(title: str, icon: str = "🌱"):
         /* ── Reduce padding on mobile ── */
         @media (max-width: 768px) {
             .block-container { padding: 0.5rem 0.75rem 1rem !important; }
-            .stSidebar { display: none; }
             section[data-testid="stSidebar"] > div { padding-top: 1rem; }
         }
         /* ── Card-style metric boxes ── */
@@ -318,7 +323,22 @@ def setup_page(title: str, icon: str = "🌱"):
     )
 
 
+def get_selected_year(default: int = 2026) -> int:
+    """Get the globally selected year from session state."""
+    if "selected_year" not in st.session_state:
+        st.session_state["selected_year"] = default
+    return st.session_state["selected_year"]
+
+
 def sidebar_nav():
-    """Render consistent sidebar navigation branding."""
+    """Render consistent sidebar navigation branding with year selector."""
     st.sidebar.markdown('<div class="sidebar-logo">🌿 Verti Garden</div>', unsafe_allow_html=True)
+    st.sidebar.number_input(
+        "Planning Year",
+        min_value=2024,
+        max_value=2030,
+        value=get_selected_year(),
+        step=1,
+        key="selected_year",
+    )
     st.sidebar.markdown("---")

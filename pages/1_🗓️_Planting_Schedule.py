@@ -20,6 +20,7 @@ from utils.helpers import (
     STATUS_OPTIONS,
     bed_for_plant,
     get_plant_status,
+    get_selected_year,
     load_garden_beds,
     load_progress,
     load_seeds_df,
@@ -35,7 +36,7 @@ st.title("🗓️ Planting Schedule")
 st.caption("Bed-aware growing season timeline with progress tracking.")
 
 # ─── Load data ────────────────────────────────────────────────────────────────
-year = 2026  # Default year
+year = get_selected_year()
 df_full = load_seeds_df(year)
 beds = load_garden_beds()
 progress = load_progress(year)
@@ -60,9 +61,6 @@ df_full["Bed"] = df_full["Display Name"].map(bed_lookup).fillna("Unassigned")
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 st.sidebar.header("🔍 Filters")
 
-year = st.sidebar.number_input(
-    "Growing Year", min_value=2020, max_value=2030, value=year, step=1
-)
 season_start = f"{year}-01-01"
 season_end   = f"{year}-10-13"
 

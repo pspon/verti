@@ -17,10 +17,11 @@ import streamlit as st
 
 from utils.helpers import (
     get_plant_color,
+    get_selected_year,
     load_companion_data,
     load_harvest_log,
-    load_seeds_df,
     load_planting_rules,
+    load_seeds_df,
     save_harvest_log,
     setup_page,
     sidebar_nav,
@@ -32,7 +33,7 @@ sidebar_nav()
 st.title("📈 Analytics & Harvest Tracker")
 st.caption("Track your harvests, analyze yields, and get insights about your garden.")
 
-year = 2026  # Default year
+year = get_selected_year()
 df = load_seeds_df(year)
 harvest_df = load_harvest_log()
 companion_data = load_companion_data()
@@ -78,7 +79,7 @@ with tab_harvest:
                 "Notes": h_notes,
             }])
             updated = pd.concat([harvest_df, new_entry], ignore_index=True)
-            save_harvest_log(updated, year)
+            save_harvest_log(updated)
             harvest_df = updated
             st.success(f"✅ Logged {h_qty} kg of **{h_variant}** on {h_date.strftime('%b %d, %Y')}")
             st.rerun()
@@ -135,7 +136,7 @@ with tab_harvest:
         h_display_sorted = h_display.sort_values("Date", ascending=False)
         st.dataframe(
             h_display_sorted,
-            width='stretch',
+            use_container_width=True,
             hide_index=True,
             column_config={
                 "Date": st.column_config.DateColumn("Date", format="MMM D, YYYY"),
@@ -157,11 +158,21 @@ with tab_harvest:
             if del_options:
                 del_choice = st.selectbox("Select entry to delete", del_options)
                 if st.button("🗑️ Delete Entry", type="secondary"):
-                    del_idx = h_display_sorted[h_display_sorted["_idx_label"] == del_choice].index[0]
-                    updated = harvest_df.drop(index=del_idx).reset_index(drop=True)
-                    save_harvest_log(updated, year)
-                    st.success("Entry deleted.")
-                    st.rerun()
+                    st.session_state["confirm_harvest_delete"] = del_choice
+
+                if st.session_state.get("confirm_harvest_delete") == del_choice:
+                    st.warning(f"Delete **{del_choice}**? This cannot be undone.")
+                    col_yes, col_no = st.columns(2)
+                    if col_yes.button("Yes, delete", type="primary", key="confirm_del_harvest"):
+                        del_idx = h_display_sorted[h_display_sorted["_idx_label"] == del_choice].index[0]
+                        updated = harvest_df.drop(index=del_idx).reset_index(drop=True)
+                        save_harvest_log(updated)
+                        del st.session_state["confirm_harvest_delete"]
+                        st.success("Entry deleted.")
+                        st.rerun()
+                    if col_no.button("Cancel", key="cancel_del_harvest"):
+                        del st.session_state["confirm_harvest_delete"]
+                        st.rerun()
 
         # ── Harvest chart ──
         st.markdown("---")

@@ -21,8 +21,8 @@ from utils.helpers import (
     get_spacing,
     load_companion_data,
     load_garden_beds,
-    load_seeds_df,
     load_planting_rules,
+    load_seeds_df,
     plants_in_bed,
     save_garden_beds,
     setup_page,
@@ -143,10 +143,21 @@ with tab_beds:
                     st.write(f"**Area:** {sq_ft:.0f} sq ft")
                     if bed.get("plants"):
                         st.write(f"**Plants:** {', '.join(bed['plants'])}")
-                    if st.button(f"🗑️ Remove", key=f"del_bed_{i}"):
-                        beds.pop(i)
-                        save_garden_beds(beds)
-                        st.rerun()
+                    confirm_key = f"confirm_del_bed_{i}"
+                    if st.button("🗑️ Remove", key=f"del_bed_{i}"):
+                        st.session_state[confirm_key] = True
+
+                    if st.session_state.get(confirm_key):
+                        st.warning(f"Remove **{bed['name']}**? All assignments will be lost.")
+                        col_y, col_n = st.columns(2)
+                        if col_y.button("Yes, remove", key=f"confirm_yes_{i}", type="primary"):
+                            beds.pop(i)
+                            save_garden_beds(beds)
+                            del st.session_state[confirm_key]
+                            st.rerun()
+                        if col_n.button("Cancel", key=f"confirm_no_{i}"):
+                            del st.session_state[confirm_key]
+                            st.rerun()
         else:
             st.info("No beds added yet. Create one using the form above.")
 
