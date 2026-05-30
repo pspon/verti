@@ -64,7 +64,7 @@ def _bed_lookup(df: pd.DataFrame, beds: list, progress: dict) -> dict:
 
 def dashboard_context(year: int) -> dict:
     df = repo.get_seeds_df(year)
-    harvest = repo.get_harvest_log()
+    harvest = repo.get_harvest_log(year)
     today = datetime.date.today()
 
     def season_count(name: str) -> int:
@@ -451,12 +451,12 @@ def companion_stats_context(year: int) -> dict:
 # ─── Analytics ─────────────────────────────────────────────────────────────────
 def analytics_harvest_context(year: int) -> dict:
     df = repo.get_seeds_df(year)
-    harvests = repo.list_harvests()
+    harvests = repo.list_harvests(year)
     companion = repo.get_companion_data()
     families = sorted(df["Seed"].unique())
     variants = sorted(df["Display Name"].unique())
 
-    hdf = repo.get_harvest_log()
+    hdf = repo.get_harvest_log(year)
     total_kg = float(hdf["Quantity_kg"].sum()) if not hdf.empty else 0.0
     plant_totals = pd.DataFrame(columns=["Plant", "Total (kg)"])
     daily = pd.DataFrame(columns=["Date", "Plant", "Quantity_kg"])
@@ -515,7 +515,7 @@ def analytics_cost_context(year: int, prices: dict | None, seed_cost: float,
     prices = prices or {p: DEFAULT_PRICES.get(p, 2.00) for p in families}
     investment = seed_cost + supplies_cost
 
-    hdf = repo.get_harvest_log()
+    hdf = repo.get_harvest_log(year)
     result = {
         "year": year, "years": repo.available_years(), "companion": companion,
         "families": families, "prices": prices, "seed_cost": seed_cost,

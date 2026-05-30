@@ -12,6 +12,7 @@ from fastapi.templating import Jinja2Templates
 
 from verti import repository as repo
 from verti.db import init_db
+from verti.logic import STATUS_LABELS, STATUS_OPTIONS
 from web import charts, views
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,6 +21,8 @@ app = FastAPI(title="Verti Garden Planner")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 templates.env.globals["nav"] = views.NAV
+templates.env.globals["status_options"] = STATUS_OPTIONS
+templates.env.globals["status_labels"] = STATUS_LABELS
 
 
 @app.on_event("startup")
@@ -59,6 +62,16 @@ def schedule(
     if request.headers.get("HX-Request") and request.query_params.get("fragment") == "results":
         return _page(request, "_schedule_results.html", "schedule", **ctx)
     return _page(request, "schedule.html", "schedule", **ctx)
+
+
+@app.post("/schedule/progress", response_class=HTMLResponse)
+def schedule_progress(request: Request, year: int = Form(...), plant: str = Form(...),
+                      field: str = Form(...), status: str = Form(...)):
+    if field not in ("start", "transplant") or status not in STATUS_OPTIONS:
+        return HTMLResponse("", status_code=400)
+    repo.set_progress_status(year, plant, field, status)
+    return _page(request, "_progress_cell.html", "schedule",
+                 year=year, plant=plant, field=field, status=status)
 
 
 # ── Garden Planner ──────────────────────────────────────────────────────────
@@ -113,8 +126,10 @@ def database(request: Request, year: int | None = None, search: str = "",
     year = year or views.default_year()
     ctx = views.database_context(year, search, season, method, frost)
     ctx["companions"] = views.companion_stats_context(year)["stats"]
-    ctx["harvests"] = repo.list_harvests()
-    ctx["variants"] = sorted(repo.get_seeds_df(year)["Display Name"].unique())
+    ctx["harvests"] = repo.list_harvests(year)
+    seeds_df = repo.get_seeds_df(year)
+    ctx["families"] = sorted(seeds_df["Seed"].unique())
+    ctx["variants"] = sorted(seeds_df["Display Name"].unique())
     ctx["today"] = datetime.date.today()
     if request.headers.get("HX-Request") and request.query_params.get("fragment") == "seeds":
         return _page(request, "_seed_table.html", "database", **ctx)
@@ -235,9 +250,9 @@ def analytics_cost(request: Request, year: int, seed_cost: float = 150.0,
 def harvest_add(
     date: str = Form(...), plant: str = Form(...), variant: str = Form(""),
     quantity_kg: float = Form(...), notes: str = Form(""),
-    next: str = Form("/analytics"),
+    year: int | None = Form(None), next: str = Form("/analytics"),
 ):
-    repo.add_harvest(date, plant, variant, quantity_kg, notes)
+    repo.add_harvest(date, plant, variant, quantity_kg, notes, year=year)
     return RedirectResponse(next, status_code=303)
 
 

@@ -64,10 +64,15 @@
 <!-- Harvest log -->
 <section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
   <h2 class="font-semibold mb-3">🌾 Harvest Log</h2>
-  <form method="post" action="/harvest/add" class="grid sm:grid-cols-5 gap-3 text-sm mb-4 items-end">
+  <form method="post" action="/harvest/add" class="grid sm:grid-cols-6 gap-3 text-sm mb-4 items-end">
     <input type="hidden" name="next" value="/database?year={{ year }}">
-    <div><label class="block text-gray-600 mb-1">Plant</label>
+    <input type="hidden" name="year" value="{{ year }}">
+    <div><label class="block text-gray-600 mb-1">Plant (family)</label>
       <select name="plant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for f in families %}<option>{{ f }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Variety</label>
+      <select name="variant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        <option value="">—</option>
         {% for v in variants %}<option>{{ v }}</option>{% endfor %}</select></div>
     <div><label class="block text-gray-600 mb-1">Date</label>
       <input name="date" type="date" value="{{ today }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>

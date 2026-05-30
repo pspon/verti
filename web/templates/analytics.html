@@ -21,12 +21,14 @@
   <h2 class="font-semibold mb-3">🌾 Log a Harvest</h2>
   <form method="post" action="/harvest/add" class="grid sm:grid-cols-5 gap-3 text-sm mb-5 items-end">
     <input type="hidden" name="next" value="/analytics?year={{ year }}">
-    <div><label class="block text-gray-600 mb-1">Plant</label>
-      <select name="variant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
-        {% for v in harvest.variants %}<option>{{ v }}</option>{% endfor %}</select></div>
-    <div><label class="block text-gray-600 mb-1">Family</label>
+    <input type="hidden" name="year" value="{{ year }}">
+    <div><label class="block text-gray-600 mb-1">Plant (family)</label>
       <select name="plant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
         {% for f in harvest.families %}<option>{{ f }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Variety</label>
+      <select name="variant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        <option value="">—</option>
+        {% for v in harvest.variants %}<option>{{ v }}</option>{% endfor %}</select></div>
     <div><label class="block text-gray-600 mb-1">Date</label>
       <input name="date" type="date" value="{{ harvest.today }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
     <div><label class="block text-gray-600 mb-1">Qty (kg)</label>
