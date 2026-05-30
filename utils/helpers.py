@@ -2,106 +2,77 @@
 Shared utilities and helper functions for the Verti Garden Planner app.
 """
 
-import json
 import math
-import os
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-# ─── Paths ────────────────────────────────────────────────────────────────────
+from verti import repository as repo
+from verti.db import init_db
+
+# Ensure the schema exists before any page reads/writes.
+init_db()
+
+# ─── Paths (kept for callers that still reference data files directly) ─────────
 ROOT_DIR = Path(__file__).parent.parent
 DATA_DIR = ROOT_DIR / "data"
-SEEDS_DIR = DATA_DIR / "seeds"
-PROGRESS_DIR = DATA_DIR / "progress"
-HARVEST_DIR = DATA_DIR / "harvests"
-HARVEST_CSV = HARVEST_DIR / "harvest_log.csv"
-COMPANION_JSON = DATA_DIR / "companion_plants.json"
-GARDEN_BEDS_JSON = DATA_DIR / "garden_beds.json"
 
 
 # ─── Data Loading ─────────────────────────────────────────────────────────────
+# These thin wrappers delegate to the UI-agnostic ``verti.repository`` (SQLite),
+# preserving the historical signatures / return shapes so pages need no changes.
+# The ``@st.cache_data`` layer is retained purely for in-session performance.
 @st.cache_data(ttl=60)
 def load_seeds_df(year: int = 2025) -> pd.DataFrame:
-    """Load and pre-process the seeds CSV for a specific year."""
-    seeds_file = SEEDS_DIR / f"{year}-seeds.csv"
-    if not seeds_file.exists():
-        # Fall back to 2025 if specific year file doesn't exist
-        seeds_file = SEEDS_DIR / "2025-seeds.csv"
-    df = pd.read_csv(seeds_file)
-    df["Start Indoors"] = pd.to_datetime(df["Start Indoors"], errors="coerce")
-    df["Transplant / Sow"] = pd.to_datetime(df["Transplant / Sow"], errors="coerce")
-    df = df.rename(columns={"Start Indoors": "Start Date", "Transplant / Sow": "End Date"})
-    df["Seed"] = df["Seed"].astype(str)
-    df["Variant"] = df["Variant"].astype(str)
-    df["Display Name"] = df[["Seed", "Variant"]].agg(" ".join, axis=1).str.strip()
-    # For Direct Sow: start date 3 days before end date
-    idx = df["Planting Method"] == "Direct Sow"
-    df.loc[idx, "Start Date"] = df.loc[idx, "End Date"] - pd.Timedelta(days=3)
-    return df
+    """Load and pre-process the seeds for a specific year."""
+    return repo.get_seeds_df(year)
 
 
 def reload_seeds():
-    """Clear the cache so next load_seeds_df() call re-reads the file."""
+    """Clear the cache so the next load_seeds_df() call re-reads the DB."""
     load_seeds_df.clear()
 
 
 @st.cache_data(ttl=300)
 def load_companion_data() -> dict:
-    """Load companion planting JSON."""
-    with open(COMPANION_JSON, "r", encoding="utf-8") as f:
-        return json.load(f)
+    """Load companion planting reference data."""
+    return repo.get_companion_data()
+
 
 @st.cache_data(ttl=60)
 def load_planting_rules() -> dict:
-    """Load planting rules JSON."""
-    rules_file = DATA_DIR / "planting_rules.json"
-    if rules_file.exists():
-        with open(rules_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+    """Load planting rules."""
+    return repo.get_planting_rules()
 
 
 @st.cache_data(ttl=60)
 def load_harvest_log() -> pd.DataFrame:
-    """Load harvest log; create empty frame if file doesn't exist."""
-    if HARVEST_CSV.exists():
-        df = pd.read_csv(HARVEST_CSV, parse_dates=["Date"])
-        return df
-    return pd.DataFrame(columns=["Date", "Plant", "Variant", "Quantity_kg", "Notes"])
+    """Load harvest log."""
+    return repo.get_harvest_log()
 
 
 def save_harvest_log(df: pd.DataFrame):
-    """Persist harvest log to CSV."""
-    DATA_DIR.mkdir(exist_ok=True)
-    df.to_csv(HARVEST_CSV, index=False)
+    """Persist harvest log."""
+    repo.save_harvest_log(df)
     load_harvest_log.clear()
 
 
 @st.cache_data(ttl=60)
 def load_garden_beds() -> list:
     """Load saved garden bed layouts."""
-    if GARDEN_BEDS_JSON.exists():
-        with open(GARDEN_BEDS_JSON, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    return repo.get_garden_beds()
 
 
 def save_garden_beds(beds: list):
-    """Persist garden bed layouts to JSON."""
-    DATA_DIR.mkdir(exist_ok=True)
-    with open(GARDEN_BEDS_JSON, "w", encoding="utf-8") as f:
-        json.dump(beds, f, indent=2, ensure_ascii=False)
+    """Persist garden bed layouts."""
+    repo.save_garden_beds(beds)
     load_garden_beds.clear()
 
 
 def save_planting_rules(rules: dict):
-    """Persist planting rules to JSON."""
-    DATA_DIR.mkdir(exist_ok=True)
-    rules_file = DATA_DIR / "planting_rules.json"
-    with open(rules_file, "w", encoding="utf-8") as f:
-        json.dump(rules, f, indent=2, ensure_ascii=False)
+    """Persist planting rules."""
+    repo.save_planting_rules(rules)
     load_planting_rules.clear()
 
 
@@ -120,20 +91,13 @@ def save_planting_rules(rules: dict):
 
 @st.cache_data(ttl=30)
 def load_progress(year: int = 2025) -> dict:
-    """Load planting progress from JSON for a specific year."""
-    progress_file = PROGRESS_DIR / f"{year}_progress.json"
-    if progress_file.exists():
-        with open(progress_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+    """Load planting progress for a specific year."""
+    return repo.get_progress(year)
 
 
 def save_progress(progress: dict, year: int = 2025):
-    """Persist planting progress to JSON for a specific year."""
-    PROGRESS_DIR.mkdir(exist_ok=True)
-    progress_file = PROGRESS_DIR / f"{year}_progress.json"
-    with open(progress_file, "w", encoding="utf-8") as f:
-        json.dump(progress, f, indent=2, ensure_ascii=False)
+    """Persist planting progress for a specific year."""
+    repo.save_progress(progress, year)
     load_progress.clear()
 
 
@@ -174,23 +138,10 @@ STATUS_COLORS = {
 }
 
 
-# ─── Seeds CSV persistence ─────────────────────────────────────────────────────
-def save_seeds_df(df: pd.DataFrame):
-    """Save the seeds dataframe back to CSV."""
-    save_df = df.copy()
-    # Restore original column names before saving
-    save_df = save_df.rename(columns={"Start Date": "Start Indoors", "End Date": "Transplant / Sow"})
-    # Split Display Name back into Seed + Variant if needed
-    if "Display Name" in save_df.columns:
-        save_df = save_df.drop(columns=["Display Name"], errors="ignore")
-    # Format dates (cross-platform: strip leading zeros manually)
-    for col in ["Start Indoors", "Transplant / Sow"]:
-        if col in save_df.columns:
-            dt_col = pd.to_datetime(save_df[col], errors="coerce")
-            save_df[col] = dt_col.apply(
-                lambda d: f"{d.month}/{d.day}/{d.year}" if pd.notna(d) else ""
-            )
-    save_df.to_csv(SEEDS_CSV, index=False)
+# ─── Seeds persistence ─────────────────────────────────────────────────────────
+def save_seeds_df(df: pd.DataFrame, year: int = 2025):
+    """Save the seeds dataframe back to the database for a specific year."""
+    repo.save_seeds_df(df, year)
     reload_seeds()
 
 

@@ -1,1 +1,12 @@
 CLAUDE.md
+
+# Local SQLite database (generated from the flat files via `python -m verti.migrate`)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/

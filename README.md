@@ -13,6 +13,24 @@ A comprehensive gardening app built with Streamlit for planning, tracking, and m
 | 🤝 **Companion Plants** | Compatibility lookup, interactive heatmap matrix, planting tips |
 | 📈 **Analytics** | Harvest tracker, garden insights, cost/ROI analysis |
 
+## Data layer
+
+Data is stored in a single **SQLite** database (`data/verti.db`) via a
+[SQLModel](https://sqlmodel.tiangolo.com/) ORM. The database is generated from
+the committed flat files (`data/seeds/*.csv`, `data/*.json`) the first time you
+run the migration; those files remain in the repo as the seed/backup.
+
+```bash
+# Build the DB from the flat files (idempotent — skips if data already present)
+uv run python -m verti.migrate
+
+# Re-import from scratch (wipes the DB first)
+uv run python -m verti.migrate --force
+```
+
+The DB path is configurable with the `VERTI_DB_PATH` environment variable, so it
+can point at a mounted volume in Docker / cloud deployments.
+
 ## Setup with uv
 
 ```bash
@@ -22,6 +40,9 @@ pip install uv
 # Install dependencies
 uv sync
 
+# Build the database from the flat files (first run only)
+uv run python -m verti.migrate
+
 # Run the app
 uv run streamlit run app.py
 ```
@@ -30,6 +51,7 @@ uv run streamlit run app.py
 
 ```bash
 pip install -r requirements.txt
+python -m verti.migrate
 streamlit run app.py
 ```
 
@@ -55,13 +77,21 @@ Verti/
 │   ├── 3_📊_Database_Manager.py
 │   ├── 4_🤝_Companion_Plants.py
 │   └── 5_📈_Analytics.py
+├── verti/                      # UI-agnostic data layer (reused by Streamlit & the upcoming FastAPI UI)
+│   ├── db.py                   # SQLite engine / session
+│   ├── models.py               # SQLModel ORM models
+│   ├── repository.py           # Data access (returns DataFrames / dicts)
+│   └── migrate.py              # Import flat files → SQLite
 ├── utils/
 │   ├── __init__.py
-│   └── helpers.py              # Shared data loading & utilities
+│   └── helpers.py              # Streamlit helpers (delegate to verti.repository)
 ├── data/
-│   ├── companion_plants.json   # Companion planting database
-│   ├── garden_beds.json        # Saved garden bed layouts (auto-created)
-│   └── harvest_log.csv         # Harvest log (auto-created)
+│   ├── verti.db                # SQLite database (generated; git-ignored)
+│   ├── seeds/                  # Per-year seed CSVs (migration source/backup)
+│   ├── companion_plants.json   # Companion planting database (migration source)
+│   ├── garden_beds.json        # Garden bed layouts (migration source)
+│   ├── progress/               # Per-year planting progress (migration source)
+│   └── harvests/               # Harvest logs (migration source)
 ├── .streamlit/
 │   └── config.toml             # Theme and server config
 ├── 2025-seeds.csv              # Your seed & planting data
