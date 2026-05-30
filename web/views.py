@@ -296,47 +296,68 @@ def sunlight_context(year: int) -> dict:
 
 
 # ─── Database Manager ───────────────────────────────────────────────────────────
+def seed_display(s: dict) -> dict:
+    """Map a raw seed dict (from the repository) to the table-row view shape."""
+    return {
+        "id": s["id"],
+        "name": s["display_name"] or s["seed"],
+        "brand": s.get("brand", ""),
+        "season": s.get("season", ""),
+        "sun": s.get("sun", ""),
+        "frost": s.get("frost", ""),
+        "method": s.get("planting_method", ""),
+        "days": "" if s.get("days_to_maturity") is None else s["days_to_maturity"],
+        "per_square": "" if s.get("per_square") is None else s["per_square"],
+        "start": s.get("start_indoors"),
+        "end": s.get("transplant_sow"),
+        "plant_this_year": bool(s.get("plant_this_year")),
+    }
+
+
+def _seed_edit_options(seeds: list[dict]) -> dict:
+    """Distinct existing values, offered as datalist suggestions in the editor."""
+    def distinct(key: str) -> list[str]:
+        return sorted({(s.get(key) or "").strip() for s in seeds if (s.get(key) or "").strip()})
+    return {
+        "seasons": distinct("season"),
+        "methods": distinct("planting_method"),
+        "suns": distinct("sun"),
+        "frosts": distinct("frost"),
+        "brands": distinct("brand"),
+    }
+
+
 def database_context(year: int, search: str = "", season: str = "All",
                      method: str = "All", frost: str = "All") -> dict:
-    df = repo.get_seeds_df(year)
-    opts = {
-        "seasons": ["All"] + (sorted(df["Season"].dropna().unique()) if "Season" in df else []),
-        "methods": ["All"] + (sorted(df["Planting Method"].dropna().unique())
-                              if "Planting Method" in df else []),
-        "frosts": ["All"] + (sorted(df["Frost"].dropna().unique()) if "Frost" in df else []),
-    }
-    view = df.copy()
-    if search:
-        s = search.strip()
-        mask = (
-            view["Seed"].astype(str).str.contains(s, case=False, na=False)
-            | view["Variant"].astype(str).str.contains(s, case=False, na=False)
-            | view["Brand"].astype(str).str.contains(s, case=False, na=False)
-        )
-        view = view[mask]
-    if season != "All":
-        view = view[view["Season"] == season]
-    if method != "All":
-        view = view[view["Planting Method"] == method]
-    if frost != "All":
-        view = view[view["Frost"] == frost]
+    seeds = repo.list_seeds(year)
 
-    records = []
-    for _, r in view.iterrows():
-        records.append({
-            "name": r["Display Name"], "brand": r.get("Brand", ""), "season": r.get("Season", ""),
-            "sun": r.get("Sun", ""), "frost": r.get("Frost", ""),
-            "method": r.get("Planting Method", ""),
-            "days": "" if pd.isna(r.get("Days")) else r.get("Days"),
-            "per_square": "" if pd.isna(r.get("Per Square")) else r.get("Per Square"),
-            "start": r["Start Date"].date() if pd.notna(r["Start Date"]) else None,
-            "end": r["End Date"].date() if pd.notna(r["End Date"]) else None,
-            "plant_this_year": bool(r.get("Plant in 2025")) if pd.notna(r.get("Plant in 2025"))
-            else False,
-        })
+    def options(key: str) -> list[str]:
+        values = {(s.get(key) or "").strip() for s in seeds if (s.get(key) or "").strip()}
+        return ["All"] + sorted(values)
+
+    opts = {"seasons": options("season"), "methods": options("planting_method"),
+            "frosts": options("frost")}
+
+    s_lower = search.strip().lower()
+    filtered = []
+    for s in seeds:
+        if s_lower and not any(
+            s_lower in (s.get(k) or "").lower() for k in ("seed", "variant", "brand")
+        ):
+            continue
+        if season != "All" and s.get("season") != season:
+            continue
+        if method != "All" and s.get("planting_method") != method:
+            continue
+        if frost != "All" and s.get("frost") != frost:
+            continue
+        filtered.append(s)
+
     return {
-        "year": year, "years": repo.available_years(), "options": opts, "records": records,
-        "count": len(records), "search": search,
+        "year": year, "years": repo.available_years(), "options": opts,
+        "records": [seed_display(s) for s in filtered],
+        "edit_options": _seed_edit_options(seeds),
+        "count": len(filtered), "search": search,
         "sel_season": season, "sel_method": method, "sel_frost": frost,
     }
 

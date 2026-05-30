@@ -45,6 +45,26 @@ def _to_date(value) -> Optional[date]:
     return None if pd.isna(ts) else ts.date()
 
 
+def _opt_int(value) -> Optional[int]:
+    """Coerce a form value to an int, or None when blank/invalid."""
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return None
+
+
+def _opt_float(value) -> Optional[float]:
+    """Coerce a form value to a float, or None when blank/invalid."""
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
 # ─── Seeds ────────────────────────────────────────────────────────────────────
 def get_seeds_df(year: int = 2025) -> pd.DataFrame:
     """Return the seeds for ``year`` as a DataFrame matching the legacy layout.
@@ -422,3 +442,83 @@ def upsert_planting_rule_deltas(display_name: str, start_delta, transplant_delta
         rule.last_frost_delta = last_frost_delta or None
         s.add(rule)
         s.commit()
+
+
+# ─── Seed CRUD (Database Manager) ───────────────────────────────────────────────
+def _seed_to_dict(r: Seed) -> dict:
+    return {
+        "id": r.id, "season_year": r.season_year, "seed": r.seed, "variant": r.variant,
+        "brand": r.brand, "packet_year": r.packet_year,
+        "days_to_maturity": r.days_to_maturity, "days_after_transplant": r.days_after_transplant,
+        "season": r.season, "per_square": r.per_square, "sun": r.sun, "frost": r.frost,
+        "planting_method": r.planting_method, "plant_this_year": r.plant_this_year,
+        "transplant_delta": r.transplant_delta, "last_frost_delta": r.last_frost_delta,
+        "start_indoors": r.start_indoors, "transplant_sow": r.transplant_sow,
+        "display_name": r.display_name,
+    }
+
+
+def _apply_seed_fields(seed: Seed, f: dict) -> None:
+    """Coerce a dict of (mostly string) form values onto a Seed instance."""
+    seed.seed = (f.get("seed") or "").strip()
+    seed.variant = (f.get("variant") or "").strip()
+    seed.brand = (f.get("brand") or "").strip()
+    seed.season = (f.get("season") or "").strip()
+    seed.sun = (f.get("sun") or "").strip()
+    seed.frost = (f.get("frost") or "").strip()
+    seed.planting_method = (f.get("planting_method") or "").strip()
+    seed.packet_year = _opt_int(f.get("packet_year"))
+    seed.days_to_maturity = _opt_int(f.get("days_to_maturity"))
+    seed.days_after_transplant = _opt_int(f.get("days_after_transplant"))
+    seed.per_square = _opt_float(f.get("per_square"))
+    seed.transplant_delta = _opt_int(f.get("transplant_delta"))
+    seed.last_frost_delta = _opt_int(f.get("last_frost_delta"))
+    seed.start_indoors = _to_date(f.get("start_indoors"))
+    seed.transplant_sow = _to_date(f.get("transplant_sow"))
+    seed.plant_this_year = _to_bool(f.get("plant_this_year"))
+
+
+def list_seeds(year: int) -> list[dict]:
+    """All seeds for a year, ordered by name, each with a stable id."""
+    with get_session() as s:
+        rows = s.exec(
+            select(Seed).where(Seed.season_year == year)
+            .order_by(Seed.seed, Seed.variant)
+        ).all()
+        return [_seed_to_dict(r) for r in rows]
+
+
+def get_seed(seed_id: int) -> Optional[dict]:
+    with get_session() as s:
+        r = s.get(Seed, seed_id)
+        return _seed_to_dict(r) if r else None
+
+
+def add_seed(year: int, fields: dict) -> int:
+    init_db()
+    with get_session() as s:
+        seed = Seed(season_year=year)
+        _apply_seed_fields(seed, fields)
+        s.add(seed)
+        s.commit()
+        s.refresh(seed)
+        return seed.id
+
+
+def update_seed(seed_id: int, fields: dict) -> bool:
+    with get_session() as s:
+        seed = s.get(Seed, seed_id)
+        if not seed:
+            return False
+        _apply_seed_fields(seed, fields)
+        s.add(seed)
+        s.commit()
+        return True
+
+
+def delete_seed(seed_id: int) -> None:
+    with get_session() as s:
+        seed = s.get(Seed, seed_id)
+        if seed:
+            s.delete(seed)
+            s.commit()

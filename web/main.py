@@ -121,6 +121,61 @@ def database(request: Request, year: int | None = None, search: str = "",
     return _page(request, "database.html", "database", **ctx)
 
 
+# ── Seed CRUD (HTMX inline editing) ──
+_SEED_FORM_FIELDS = [
+    "seed", "variant", "brand", "season", "sun", "frost", "planting_method",
+    "packet_year", "days_to_maturity", "days_after_transplant", "per_square",
+    "transplant_delta", "last_frost_delta", "start_indoors", "transplant_sow",
+    "plant_this_year",
+]
+
+
+async def _seed_fields(request: Request) -> dict:
+    form = await request.form()
+    return {k: form.get(k) for k in _SEED_FORM_FIELDS}
+
+
+@app.get("/database/seed/{seed_id}/edit", response_class=HTMLResponse)
+def seed_edit_form(request: Request, seed_id: int, year: int):
+    seed = repo.get_seed(seed_id)
+    if not seed:
+        return HTMLResponse("", status_code=404)
+    return _page(request, "_seed_row_edit.html", "database", s=seed, year=year)
+
+
+@app.get("/database/seed/{seed_id}", response_class=HTMLResponse)
+def seed_row(request: Request, seed_id: int, year: int):
+    seed = repo.get_seed(seed_id)
+    if not seed:
+        return HTMLResponse("")
+    return _page(request, "_seed_row.html", "database", r=views.seed_display(seed), year=year)
+
+
+@app.post("/database/seed", response_class=HTMLResponse)
+async def seed_add(request: Request):
+    fields = await _seed_fields(request)
+    form = await request.form()
+    year = int(form.get("year"))
+    seed = repo.get_seed(repo.add_seed(year, fields))
+    return _page(request, "_seed_row.html", "database", r=views.seed_display(seed), year=year)
+
+
+@app.post("/database/seed/{seed_id}", response_class=HTMLResponse)
+async def seed_update(request: Request, seed_id: int):
+    fields = await _seed_fields(request)
+    form = await request.form()
+    year = int(form.get("year"))
+    repo.update_seed(seed_id, fields)
+    seed = repo.get_seed(seed_id)
+    return _page(request, "_seed_row.html", "database", r=views.seed_display(seed), year=year)
+
+
+@app.post("/database/seed/{seed_id}/delete", response_class=HTMLResponse)
+def seed_delete(seed_id: int):
+    repo.delete_seed(seed_id)
+    return HTMLResponse("")  # outerHTML swap removes the row
+
+
 # ── Companion Plants ──────────────────────────────────────────────────────────
 @app.get("/companions", response_class=HTMLResponse)
 def companions(request: Request, year: int | None = None, plant: str | None = None,

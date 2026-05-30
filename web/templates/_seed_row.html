@@ -1,0 +1,22 @@
+<tr id="seed-{{ r.id }}" class="border-b border-gray-50">
+  <td class="py-1.5 pr-4 font-medium">{{ r.name }}</td>
+  <td class="py-1.5 pr-4">{{ r.brand }}</td>
+  <td class="py-1.5 pr-4">{{ r.season }}</td>
+  <td class="py-1.5 pr-4">{{ r.sun }}</td>
+  <td class="py-1.5 pr-4">{{ r.frost }}</td>
+  <td class="py-1.5 pr-4">{{ r.method }}</td>
+  <td class="py-1.5 pr-4">{{ r.days }}</td>
+  <td class="py-1.5 pr-4">{{ r.per_square }}</td>
+  <td class="py-1.5 pr-4 whitespace-nowrap">{{ r.start.strftime('%b %d') if r.start else '—' }}</td>
+  <td class="py-1.5 pr-4 whitespace-nowrap">{{ r.end.strftime('%b %d') if r.end else '—' }}</td>
+  <td class="py-1.5 pr-4">{{ '✅' if r.plant_this_year else '' }}</td>
+  <td class="py-1.5 whitespace-nowrap">
+    <button title="Edit" class="text-verti-700 hover:underline mr-1"
+            hx-get="/database/seed/{{ r.id }}/edit?year={{ year }}"
+            hx-target="#seed-{{ r.id }}" hx-swap="outerHTML">✏️</button>
+    <button title="Delete" class="text-red-600 hover:underline"
+            hx-post="/database/seed/{{ r.id }}/delete"
+            hx-target="#seed-{{ r.id }}" hx-swap="outerHTML"
+            hx-confirm="Delete {{ r.name }}?">🗑️</button>
+  </td>
+</tr>

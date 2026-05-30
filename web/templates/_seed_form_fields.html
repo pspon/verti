@@ -1,0 +1,58 @@
+{# Shared seed input grid. Expects `s` (a seed dict; may be empty for "add"). #}
+<div><label class="block text-gray-600 mb-0.5">Seed *</label>
+  <input name="seed" value="{{ s.get('seed', '') }}" required
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Variant</label>
+  <input name="variant" value="{{ s.get('variant', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Brand</label>
+  <input name="brand" list="dl-brand" value="{{ s.get('brand', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Season</label>
+  <input name="season" list="dl-season" value="{{ s.get('season', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Sun</label>
+  <input name="sun" list="dl-sun" value="{{ s.get('sun', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Frost</label>
+  <input name="frost" list="dl-frost" value="{{ s.get('frost', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Planting Method</label>
+  <input name="planting_method" list="dl-method" value="{{ s.get('planting_method', '') }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Days to Harvest</label>
+  <input name="days_to_maturity" type="number"
+         value="{{ s.get('days_to_maturity') if s.get('days_to_maturity') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Days After Transplant</label>
+  <input name="days_after_transplant" type="number"
+         value="{{ s.get('days_after_transplant') if s.get('days_after_transplant') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Per Sq Ft</label>
+  <input name="per_square" type="number" step="0.1"
+         value="{{ s.get('per_square') if s.get('per_square') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Seed Year</label>
+  <input name="packet_year" type="number"
+         value="{{ s.get('packet_year') if s.get('packet_year') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Transplant Δ (days)</label>
+  <input name="transplant_delta" type="number"
+         value="{{ s.get('transplant_delta') if s.get('transplant_delta') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Last Frost Δ (days)</label>
+  <input name="last_frost_delta" type="number"
+         value="{{ s.get('last_frost_delta') if s.get('last_frost_delta') is not none else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Start Indoors</label>
+  <input name="start_indoors" type="date"
+         value="{{ s.get('start_indoors').isoformat() if s.get('start_indoors') else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<div><label class="block text-gray-600 mb-0.5">Sow / Transplant</label>
+  <input name="transplant_sow" type="date"
+         value="{{ s.get('transplant_sow').isoformat() if s.get('transplant_sow') else '' }}"
+         class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+<label class="flex items-center gap-2 mt-5">
+  <input type="checkbox" name="plant_this_year" value="true" class="accent-verti-500"
+         {% if s.get('plant_this_year') %}checked{% endif %}>
+  <span>Plant this year</span></label>

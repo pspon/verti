@@ -5,23 +5,14 @@
       <th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">Brand</th><th class="py-2 pr-4">Season</th>
       <th class="py-2 pr-4">Sun</th><th class="py-2 pr-4">Frost</th><th class="py-2 pr-4">Method</th>
       <th class="py-2 pr-4">Days</th><th class="py-2 pr-4">Per Sq</th>
-      <th class="py-2 pr-4">Start</th><th class="py-2 pr-4">Sow/Transplant</th><th class="py-2">This Yr</th>
+      <th class="py-2 pr-4">Start</th><th class="py-2 pr-4">Sow/Transplant</th>
+      <th class="py-2 pr-4">This Yr</th><th class="py-2">Actions</th>
     </tr></thead>
-    <tbody>
-    {% for r in records %}
-      <tr class="border-b border-gray-50">
-        <td class="py-1.5 pr-4 font-medium">{{ r.name }}</td>
-        <td class="py-1.5 pr-4">{{ r.brand }}</td><td class="py-1.5 pr-4">{{ r.season }}</td>
-        <td class="py-1.5 pr-4">{{ r.sun }}</td><td class="py-1.5 pr-4">{{ r.frost }}</td>
-        <td class="py-1.5 pr-4">{{ r.method }}</td><td class="py-1.5 pr-4">{{ r.days }}</td>
-        <td class="py-1.5 pr-4">{{ r.per_square }}</td>
-        <td class="py-1.5 pr-4 whitespace-nowrap">{{ r.start.strftime('%b %d') if r.start else '—' }}</td>
-        <td class="py-1.5 pr-4 whitespace-nowrap">{{ r.end.strftime('%b %d') if r.end else '—' }}</td>
-        <td class="py-1.5">{{ '✅' if r.plant_this_year else '' }}</td>
-      </tr>
-    {% else %}
-      <tr><td colspan="11" class="py-6 text-center text-gray-500">No records match.</td></tr>
-    {% endfor %}
+    <tbody id="seed-tbody">
+    {% for r in records %}{% include "_seed_row.html" %}{% endfor %}
+    {% if not records %}
+      <tr id="no-seeds"><td colspan="12" class="py-6 text-center text-gray-500">No records match.</td></tr>
+    {% endif %}
     </tbody>
   </table>
 </div>

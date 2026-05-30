@@ -35,6 +35,29 @@
     </select>
     {% endfor %}
   </form>
+
+  <!-- Shared datalists for the add/edit seed forms -->
+  <datalist id="dl-brand">{% for v in edit_options.brands %}<option value="{{ v }}">{% endfor %}</datalist>
+  <datalist id="dl-season">{% for v in edit_options.seasons %}<option value="{{ v }}">{% endfor %}</datalist>
+  <datalist id="dl-sun">{% for v in edit_options.suns %}<option value="{{ v }}">{% endfor %}</datalist>
+  <datalist id="dl-frost">{% for v in edit_options.frosts %}<option value="{{ v }}">{% endfor %}</datalist>
+  <datalist id="dl-method">{% for v in edit_options.methods %}<option value="{{ v }}">{% endfor %}</datalist>
+
+  <!-- Add seed -->
+  <details class="mb-4 border border-verti-100 rounded-lg p-3">
+    <summary class="cursor-pointer font-medium text-verti-700">➕ Add a seed</summary>
+    <form hx-post="/database/seed" hx-target="#seed-tbody" hx-swap="beforeend"
+          hx-on::after-request="if(event.detail.successful){this.reset();
+            document.getElementById('no-seeds')?.remove();}"
+          class="grid sm:grid-cols-2 md:grid-cols-4 gap-2 text-sm mt-3">
+      <input type="hidden" name="year" value="{{ year }}">
+      {% set s = {} %}{% include "_seed_form_fields.html" %}
+      <div class="sm:col-span-2 md:col-span-4">
+        <button class="bg-verti-500 hover:bg-verti-700 text-white rounded-lg px-4 py-1.5 font-medium">➕ Add Seed</button>
+      </div>
+    </form>
+  </details>
+
   <div id="seed-table">{% include "_seed_table.html" %}</div>
 </section>
 
