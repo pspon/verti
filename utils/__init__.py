@@ -1,1 +1,0 @@
-# Verti Garden utilities package
