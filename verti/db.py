@@ -37,7 +37,29 @@ def init_db() -> None:
     """Create all tables. Safe to call repeatedly (no-op if they exist)."""
     import verti.models  # noqa: F401  (registers models on SQLModel.metadata)
 
-    SQLModel.metadata.create_all(get_engine())
+    engine = get_engine()
+    SQLModel.metadata.create_all(engine)
+    _reconcile_schema(engine)
+
+
+def _reconcile_schema(engine) -> None:
+    """Apply lightweight, idempotent column additions for pre-existing databases.
+
+    ``create_all`` only creates missing *tables*, never alters existing ones, so a
+    database created before a column was added needs a manual ``ALTER``. Each step
+    is guarded by a ``PRAGMA`` check so this is safe to run on every startup.
+    """
+    with engine.begin() as conn:
+        harvest_cols = {row[1] for row in conn.exec_driver_sql("PRAGMA table_info(harvest)")}
+        if harvest_cols and "season_year" not in harvest_cols:
+            conn.exec_driver_sql(
+                "ALTER TABLE harvest ADD COLUMN season_year INTEGER NOT NULL DEFAULT 0"
+            )
+            # Backfill the plan year from the harvest date where one is recorded.
+            conn.exec_driver_sql(
+                "UPDATE harvest SET season_year = CAST(strftime('%Y', date) AS INTEGER) "
+                "WHERE season_year = 0 AND date IS NOT NULL AND date != ''"
+            )
 
 
 def get_session() -> Session:
