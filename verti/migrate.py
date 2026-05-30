@@ -14,7 +14,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
 
 import pandas as pd
 from sqlmodel import select
@@ -77,7 +76,8 @@ def import_seeds(session) -> int:
                 per_square=_num(row.get("Per Square"), float),
                 sun="" if pd.isna(row.get("Sun")) else str(row.get("Sun")),
                 frost="" if pd.isna(row.get("Frost")) else str(row.get("Frost")),
-                planting_method="" if pd.isna(row.get("Planting Method")) else str(row.get("Planting Method")),
+                planting_method=("" if pd.isna(row.get("Planting Method"))
+                                 else str(row.get("Planting Method"))),
                 plant_this_year=_bool(row.get("Plant in 2025")),
                 transplant_delta=_num(row.get("Transplant Delta"), int),
                 last_frost_delta=_num(row.get("Last Frost Delta"), int),

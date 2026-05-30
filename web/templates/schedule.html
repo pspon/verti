@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Planting Schedule{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+  <div>
+    <h1 class="text-2xl font-bold">🗓️ Planting Schedule</h1>
+    <p class="text-sm text-gray-500">Bed-aware growing season timeline with progress tracking.</p>
+  </div>
+</div>
+
+<form id="filters" hx-get="/schedule" hx-target="#results" hx-swap="innerHTML"
+      hx-trigger="change" hx-vals='{"fragment":"results"}' hx-push-url="true"
+      class="bg-white border border-verti-100 rounded-xl p-4 mb-6 grid md:grid-cols-4 gap-4 text-sm">
+  <div>
+    <label class="block font-medium mb-1 text-gray-600">Year</label>
+    <select name="year" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </div>
+  {% set groups = [('Season', 'season', all_seasons, sel_seasons),
+                   ('Method', 'method', all_methods, sel_methods),
+                   ('Bed', 'bed', all_beds, sel_beds)] %}
+  {% for title, name, options, selected in groups %}
+  <div>
+    <label class="block font-medium mb-1 text-gray-600">{{ title }}</label>
+    <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
+      {% for opt in options %}
+      <label class="flex items-center gap-2">
+        <input type="checkbox" name="{{ name }}" value="{{ opt }}"
+               {% if opt in selected %}checked{% endif %} class="accent-verti-500">
+        <span>{{ opt }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</form>
+
+<div id="results">
+  {% include "_schedule_results.html" %}
+</div>
+{% endblock %}

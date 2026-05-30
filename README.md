@@ -1,6 +1,12 @@
 # 🌿 Verti Garden Planner
 
-A comprehensive gardening app built with Streamlit for planning, tracking, and managing your growing season.
+A comprehensive gardening app for planning, tracking, and managing your growing
+season. Data is stored in **SQLite** (via SQLModel). There are two front-ends
+sharing the same data layer during an ongoing migration:
+
+* **FastAPI + HTMX** (`web/`) — the modern UI, Docker-deployable. Dashboard and
+  Planting Schedule are ported; the remaining sections are being migrated.
+* **Streamlit** (`app.py`, `pages/`) — the original UI, fully featured.
 
 ## Features
 
@@ -54,6 +60,29 @@ pip install -r requirements.txt
 python -m verti.migrate
 streamlit run app.py
 ```
+
+## Run the FastAPI + HTMX web UI
+
+```bash
+uv run python -m verti.migrate          # first run only
+uv run uvicorn web.main:app --reload    # http://localhost:8000
+```
+
+## Run with Docker (recommended for deployment)
+
+The container runs the FastAPI UI and stores the database on a named volume, so
+data survives restarts and redeploys — unlike the previous flat-file approach on
+ephemeral cloud filesystems.
+
+```bash
+docker compose up --build      # http://localhost:8000
+```
+
+The entrypoint runs the migration on startup (idempotent) to build the database
+from the bundled flat files into the volume. The DB location is controlled by
+`VERTI_DB_PATH` (defaults to `/data/verti.db` in the container). This image runs
+anywhere Docker does — a VPS, or a managed platform like Fly.io / Railway /
+Render.
 
 ## Deploy to Streamlit Cloud
 

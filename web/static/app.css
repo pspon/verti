@@ -1,0 +1,15 @@
+/* Verti Garden — supplemental styles on top of Tailwind (CDN). */
+
+/* Make server-rendered Plotly charts responsive within their cards. */
+.js-plotly-plot,
+.plotly-graph-div {
+  width: 100% !important;
+}
+
+/* Subtle htmx loading feedback on the results container. */
+#results.htmx-request {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+html { scroll-behavior: smooth; }

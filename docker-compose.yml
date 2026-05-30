@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      VERTI_DB_PATH: /data/verti.db
+    volumes:
+      # Persist the database across container restarts / redeploys.
+      - verti-data:/data
+    restart: unless-stopped
+
+volumes:
+  verti-data:

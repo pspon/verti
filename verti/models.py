@@ -13,7 +13,7 @@ into three concerns:
 import datetime
 from typing import List, Optional
 
-from sqlalchemy import Column, JSON, UniqueConstraint
+from sqlalchemy import JSON, Column, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -76,7 +76,9 @@ class BedPlant(SQLModel, table=True):
 class PlantingProgress(SQLModel, table=True):
     """Per-season tracking of sowing / transplanting status for a plant."""
 
-    __table_args__ = (UniqueConstraint("season_year", "display_name", name="uq_progress_year_plant"),)
+    __table_args__ = (
+        UniqueConstraint("season_year", "display_name", name="uq_progress_year_plant"),
+    )
 
     id: Optional[int] = Field(default=None, primary_key=True)
     season_year: int = Field(index=True)

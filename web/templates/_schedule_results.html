@@ -1,0 +1,45 @@
+{% set status_labels = {'not_started':'⬜ Not Started','in_progress':'🔄 In Progress','done':'✅ Done','skipped':'⏭️ Skipped'} %}
+
+<div class="flex items-center gap-4 mb-4 text-sm text-gray-600">
+  <span><b class="text-verti-700">{{ total }}</b> varieties shown</span>
+  <span><b class="text-verti-700">{{ done }}</b> fully done</span>
+  {% if total %}
+  <div class="flex-1 max-w-xs bg-verti-50 rounded h-2">
+    <div class="bg-verti-500 h-2 rounded" style="width: {{ (done / total * 100) | round }}%"></div>
+  </div>
+  {% endif %}
+</div>
+
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-6">
+  <h2 class="font-semibold mb-3">Season Timeline ({{ year }})</h2>
+  {{ timeline_html | safe }}
+</section>
+
+<section class="bg-white border border-verti-100 rounded-xl p-5">
+  <h2 class="font-semibold mb-3">Task List</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead><tr class="text-left text-gray-500 border-b border-gray-100">
+        <th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">Bed</th><th class="py-2 pr-4">Season</th>
+        <th class="py-2 pr-4">Method</th><th class="py-2 pr-4">Start</th><th class="py-2 pr-4">Sow / Transplant</th>
+        <th class="py-2 pr-4">Start Status</th><th class="py-2">Transplant Status</th>
+      </tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr class="border-b border-gray-50">
+          <td class="py-2 pr-4 font-medium">{{ r.plant }}</td>
+          <td class="py-2 pr-4">{{ r.bed }}</td>
+          <td class="py-2 pr-4">{{ r.season }}</td>
+          <td class="py-2 pr-4">{{ r.method }}</td>
+          <td class="py-2 pr-4 whitespace-nowrap">{{ r.start.strftime('%b %d') if r.start else '—' }}</td>
+          <td class="py-2 pr-4 whitespace-nowrap">{{ r.end.strftime('%b %d') if r.end else '—' }}</td>
+          <td class="py-2 pr-4 whitespace-nowrap">{{ status_labels[r.start_status] }}</td>
+          <td class="py-2 whitespace-nowrap">{{ status_labels[r.transplant_status] }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" class="py-6 text-center text-gray-500">No plants match your filters.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>

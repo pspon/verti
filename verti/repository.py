@@ -55,7 +55,7 @@ def get_seeds_df(year: int = 2025) -> pd.DataFrame:
     with get_session() as s:
         rows = s.exec(select(Seed).where(Seed.season_year == year)).all()
         if not rows:
-            years = sorted({y for (y,) in s.exec(select(Seed.season_year)).all()})
+            years = sorted(set(s.exec(select(Seed.season_year)).all()))
             if years:
                 rows = s.exec(select(Seed).where(Seed.season_year == years[0])).all()
 
@@ -128,8 +128,12 @@ def _seed_from_row(row: pd.Series, year: int) -> Seed:
         plant_this_year=_to_bool(row.get("Plant in 2025")),
         transplant_delta=num("Transplant Delta", int),
         last_frost_delta=num("Last Frost Delta", int),
-        start_indoors=_to_date(row.get("Start Date") if "Start Date" in row else row.get("Start Indoors")),
-        transplant_sow=_to_date(row.get("End Date") if "End Date" in row else row.get("Transplant / Sow")),
+        start_indoors=_to_date(
+            row.get("Start Date") if "Start Date" in row else row.get("Start Indoors")
+        ),
+        transplant_sow=_to_date(
+            row.get("End Date") if "End Date" in row else row.get("Transplant / Sow")
+        ),
     )
 
 
@@ -251,7 +255,8 @@ def save_harvest_log(df: pd.DataFrame) -> None:
                 date=_to_date(row.get("Date")),
                 plant=str(row.get("Plant", "") or ""),
                 variant=str(row.get("Variant", "") or ""),
-                quantity_kg=None if pd.isna(row.get("Quantity_kg")) else float(row.get("Quantity_kg")),
+                quantity_kg=(None if pd.isna(row.get("Quantity_kg"))
+                             else float(row.get("Quantity_kg"))),
                 notes=str(row.get("Notes", "") or ""),
             ))
         s.commit()
@@ -340,4 +345,4 @@ def save_progress(progress: dict, year: int = 2025) -> None:
 def available_years() -> list[int]:
     """Distinct plan years present in the seed table (descending)."""
     with get_session() as s:
-        return sorted({y for (y,) in s.exec(select(Seed.season_year)).all()}, reverse=True)
+        return sorted(set(s.exec(select(Seed.season_year)).all()), reverse=True)

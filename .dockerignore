@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+.streamlit
+# Local DB is rebuilt from the flat files inside the container.
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+.ruff_cache
+.pytest_cache
