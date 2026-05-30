@@ -1,0 +1,38 @@
+<div class="grid sm:grid-cols-2 gap-4 text-sm mb-5">
+  <div class="bg-verti-50 rounded-lg p-4">
+    <div class="font-medium mb-1">Recommended Spacing — {{ spacing.plant }}</div>
+    <ul class="text-gray-600 space-y-0.5">
+      <li>Plant spacing: <b>{{ spacing.info.spacing_in }} in</b></li>
+      <li>Row spacing: <b>{{ spacing.info.row_spacing_in }} in</b></li>
+      <li>Planting depth: <b>{{ spacing.info.depth_in }} in</b></li>
+    </ul>
+  </div>
+  <div class="bg-verti-50 rounded-lg p-4">
+    <div>Area: <b>{{ spacing.sqft }} sq ft</b></div>
+    <div>Estimated plants: <b>{{ spacing.count }}</b></div>
+    {% if spacing.sfg_count is not none %}
+    <div>Square-foot method: <b>{{ spacing.sfg_count }}</b> plants ({{ spacing.per_sq_csv }}/sq ft)</div>
+    {% endif %}
+  </div>
+</div>
+
+<h3 class="font-medium mb-2">Full Spacing Reference</h3>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead><tr class="text-left text-gray-500 border-b border-gray-100">
+      <th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">Spacing (in)</th>
+      <th class="py-2 pr-4">Row (in)</th><th class="py-2 pr-4">Depth (in)</th>
+      <th class="py-2 pr-4">Per Sq Ft (SFG)</th><th class="py-2">Per Sq (data)</th>
+    </tr></thead>
+    <tbody>
+    {% for r in spacing.reference %}
+      <tr class="border-b border-gray-50">
+        <td class="py-1.5 pr-4 font-medium">{{ r.plant }}</td>
+        <td class="py-1.5 pr-4">{{ r.spacing }}</td><td class="py-1.5 pr-4">{{ r.row }}</td>
+        <td class="py-1.5 pr-4">{{ r.depth }}</td><td class="py-1.5 pr-4">{{ r.sfg }}</td>
+        <td class="py-1.5">{{ r.csv }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

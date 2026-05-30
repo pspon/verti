@@ -346,3 +346,79 @@ def available_years() -> list[int]:
     """Distinct plan years present in the seed table (descending)."""
     with get_session() as s:
         return sorted(set(s.exec(select(Seed.season_year)).all()), reverse=True)
+
+
+# ─── CRUD helpers for the web UI ────────────────────────────────────────────────
+def list_harvests() -> list[dict]:
+    """Harvest rows with stable ids, newest first."""
+    with get_session() as s:
+        rows = s.exec(select(Harvest)).all()
+    rows.sort(key=lambda r: (r.date or date.min), reverse=True)
+    return [
+        {"id": r.id, "date": r.date, "plant": r.plant, "variant": r.variant,
+         "quantity_kg": r.quantity_kg, "notes": r.notes}
+        for r in rows
+    ]
+
+
+def add_harvest(date_value, plant: str, variant: str, quantity_kg: float, notes: str = "") -> None:
+    init_db()
+    with get_session() as s:
+        s.add(Harvest(
+            date=_to_date(date_value), plant=plant, variant=variant,
+            quantity_kg=quantity_kg, notes=notes,
+        ))
+        s.commit()
+
+
+def delete_harvest(harvest_id: int) -> None:
+    with get_session() as s:
+        obj = s.get(Harvest, harvest_id)
+        if obj:
+            s.delete(obj)
+            s.commit()
+
+
+def upsert_garden_bed(bed: dict, original_name: Optional[str] = None) -> None:
+    """Create or update a bed (matched by ``original_name`` or ``bed['name']``)."""
+    init_db()
+    key = original_name or bed.get("name")
+    with get_session() as s:
+        existing = s.exec(select(GardenBed).where(GardenBed.name == key)).first()
+        target = existing or GardenBed()
+        target.name = bed.get("name", "")
+        target.width = float(bed.get("width", 0) or 0)
+        target.length = float(bed.get("length", 0) or 0)
+        target.bed_type = bed.get("type", "")
+        target.sun = bed.get("sun", "")
+        if existing:
+            for p in list(existing.plants):
+                s.delete(p)
+        target.plants = [
+            BedPlant(plant_name=name, position=i) for i, name in enumerate(bed.get("plants", []))
+        ]
+        s.add(target)
+        s.commit()
+
+
+def delete_garden_bed(name: str) -> None:
+    with get_session() as s:
+        existing = s.exec(select(GardenBed).where(GardenBed.name == name)).first()
+        if existing:
+            s.delete(existing)
+            s.commit()
+
+
+def upsert_planting_rule_deltas(display_name: str, start_delta, transplant_delta,
+                                last_frost_delta) -> None:
+    """Set the scheduling deltas for a plant's rule (creating it if needed)."""
+    init_db()
+    with get_session() as s:
+        rule = s.exec(
+            select(PlantingRule).where(PlantingRule.display_name == display_name)
+        ).first() or PlantingRule(display_name=display_name)
+        rule.start_indoors_delta = start_delta or None
+        rule.transplant_delta = transplant_delta or None
+        rule.last_frost_delta = last_frost_delta or None
+        s.add(rule)
+        s.commit()

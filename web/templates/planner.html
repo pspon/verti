@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Garden Planner{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+  <div>
+    <h1 class="text-2xl font-bold">🌿 Garden Space Planner</h1>
+    <p class="text-sm text-gray-500">Design beds, calculate spacing, and check companion compatibility.</p>
+  </div>
+  <form method="get" action="/planner" class="flex items-center gap-2">
+    <label class="text-sm text-gray-500">Year</label>
+    <select name="year" onchange="this.form.submit()"
+            class="border border-verti-100 rounded-lg px-3 py-1.5 text-sm bg-white">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<nav class="flex gap-2 text-sm mb-6">
+  <a href="#beds" class="px-3 py-1.5 rounded-lg bg-verti-50 text-verti-700">🛏️ Beds</a>
+  <a href="#spacing" class="px-3 py-1.5 rounded-lg bg-verti-50 text-verti-700">📏 Spacing</a>
+  <a href="#sunlight" class="px-3 py-1.5 rounded-lg bg-verti-50 text-verti-700">☀️ Sunlight</a>
+</nav>
+
+<!-- ── BED DESIGNER ── -->
+<section id="beds" class="grid lg:grid-cols-3 gap-6 mb-10">
+  <div class="bg-white border border-verti-100 rounded-xl p-5">
+    <h2 class="font-semibold mb-3">Add / Update Bed</h2>
+    <p class="text-xs text-gray-400 mb-3">Re-using an existing name updates that bed.</p>
+    <form method="post" action="/planner/beds" class="space-y-3 text-sm">
+      <input type="hidden" name="year" value="{{ year }}">
+      <div><label class="block text-gray-600 mb-1">Bed Name</label>
+        <input name="name" value="Raised Bed 1" required class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="block text-gray-600 mb-1">Width (ft)</label>
+          <input name="width" type="number" step="0.5" min="1" value="4" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+        <div><label class="block text-gray-600 mb-1">Length (ft)</label>
+          <input name="length" type="number" step="0.5" min="1" value="8" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+      </div>
+      <div><label class="block text-gray-600 mb-1">Bed Type</label>
+        <select name="type" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+          {% for t in bed_types %}<option>{{ t }}</option>{% endfor %}</select></div>
+      <div><label class="block text-gray-600 mb-1">Sun Exposure</label>
+        <select name="sun" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+          {% for s in sun_options %}<option>{{ s }}</option>{% endfor %}</select></div>
+      <div><label class="block text-gray-600 mb-1">Plants (Ctrl/Cmd-click for multiple)</label>
+        <select name="plants" multiple size="6" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+          {% for f in families %}<option value="{{ f }}">{{ f }}</option>{% endfor %}</select></div>
+      <button class="w-full bg-verti-500 hover:bg-verti-700 text-white rounded-lg py-2 font-medium">💾 Save Bed</button>
+    </form>
+  </div>
+
+  <div class="lg:col-span-2 space-y-6">
+    {% if bed_charts %}
+      {% for bed, chart in bed_charts %}
+      <div class="bg-white border border-verti-100 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-semibold">🛏️ {{ bed.name }}
+            <span class="text-sm font-normal text-gray-500">· {{ bed.width }}×{{ bed.length }} ft · {{ bed.area }} sq ft · {{ bed.sun }}</span></h3>
+          <form method="post" action="/planner/beds/delete" onsubmit="return confirm('Delete {{ bed.name }}?')">
+            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="name" value="{{ bed.name }}">
+            <button class="text-sm text-red-600 hover:underline">🗑️ Delete</button>
+          </form>
+        </div>
+        {{ chart | safe }}
+        {% for g in bed.good %}<div class="mt-2 text-sm bg-verti-50 text-verti-700 rounded px-3 py-1.5">✅ {{ g }} are great companions</div>{% endfor %}
+        {% for warn in bed.bad %}<div class="mt-2 text-sm bg-red-50 text-red-700 rounded px-3 py-1.5">⚠️ {{ warn }} are poor companions</div>{% endfor %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="bg-white border border-verti-100 rounded-xl p-8 text-center text-gray-500">
+        Add at least one bed to see the garden overview.</div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── SPACING CALCULATOR ── -->
+<section id="spacing" class="bg-white border border-verti-100 rounded-xl p-5 mb-10">
+  <h2 class="font-semibold mb-3">📏 Spacing &amp; Yield Calculator</h2>
+  <form hx-get="/planner/spacing" hx-target="#spacing-results" hx-swap="innerHTML"
+        hx-trigger="change" hx-vals='{"year": {{ year }} }'
+        class="grid sm:grid-cols-3 gap-3 text-sm mb-4">
+    <div><label class="block text-gray-600 mb-1">Plant</label>
+      <select name="plant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for f in families %}<option {% if f == spacing.plant %}selected{% endif %}>{{ f }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Width (ft)</label>
+      <input name="width" type="number" step="0.5" min="0.5" value="{{ spacing.width }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+    <div><label class="block text-gray-600 mb-1">Length (ft)</label>
+      <input name="length" type="number" step="0.5" min="0.5" value="{{ spacing.length }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+  </form>
+  <div id="spacing-results">{% include "_spacing_results.html" %}</div>
+</section>
+
+<!-- ── SUNLIGHT PLANNER ── -->
+<section id="sunlight" class="bg-white border border-verti-100 rounded-xl p-5">
+  <h2 class="font-semibold mb-3">☀️ Sunlight Planner</h2>
+  {{ sun_chart | safe }}
+  <div class="mt-4 space-y-3">
+    {% for grp in sun_groups %}
+    <details {% if 'Full Sun' in grp.level %}open{% endif %} class="border border-verti-100 rounded-lg p-3">
+      <summary class="cursor-pointer font-medium">{{ grp.icon }} {{ grp.level }} ({{ grp.count }} varieties)</summary>
+      <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+        {% for fam in grp.families %}
+        <div style="border-left:4px solid {{ fam.color }}; background:{{ fam.color }}22;" class="rounded p-2 text-sm">
+          <b>{{ fam.seed }}</b><br><span class="text-xs text-gray-600">{{ fam.variants | join('<br>') | safe }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

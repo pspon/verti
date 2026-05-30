@@ -1,0 +1,44 @@
+{% if not cost.has_data %}
+<p class="text-sm text-gray-500">Log harvests in the tracker above to see your ROI calculation.</p>
+{% else %}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+  <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">💵 Investment</div>
+    <div class="text-xl font-bold text-verti-700">${{ '%.2f' | format(cost.investment) }}</div></div>
+  <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">🌾 Harvest Value</div>
+    <div class="text-xl font-bold text-verti-700">${{ '%.2f' | format(cost.total_value) }}</div></div>
+  <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">📈 ROI</div>
+    <div class="text-xl font-bold {% if cost.roi < 0 %}text-red-600{% else %}text-verti-700{% endif %}">
+      ${{ '%.2f' | format(cost.roi) }} ({{ '%+.0f' | format(cost.roi_pct) }}%)</div></div>
+  <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">🥦 Harvested</div>
+    <div class="text-xl font-bold text-verti-700">{{ '%.2f' | format(cost.total_harvested) }} kg</div></div>
+</div>
+
+<div class="overflow-x-auto mb-4">
+  <table class="w-full text-sm">
+    <thead><tr class="text-left text-gray-500 border-b border-gray-100">
+      <th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">Harvested (kg)</th>
+      <th class="py-2 pr-4">Price ($/kg)</th><th class="py-2">Value ($)</th>
+    </tr></thead>
+    <tbody>
+    {% for row in cost.cost_df.to_dict('records') %}
+      <tr class="border-b border-gray-50">
+        <td class="py-1.5 pr-4 font-medium">{{ row['Plant'] }}</td>
+        <td class="py-1.5 pr-4">{{ '%.2f' | format(row['Harvested (kg)']) }}</td>
+        <td class="py-1.5 pr-4">${{ '%.2f' | format(row['Market Price ($/kg)']) }}</td>
+        <td class="py-1.5">${{ '%.2f' | format(row['Value ($)']) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{{ cost.value_html | safe }}
+
+{% if cost.roi < 0 %}
+<div class="mt-3 rounded-lg p-3 text-sm bg-amber-50 text-amber-700">
+  🎯 You need <b>${{ '%.2f' | format(cost.roi | abs) }}</b> more in harvest value to break even.</div>
+{% else %}
+<div class="mt-3 rounded-lg p-3 text-sm bg-verti-50 text-verti-700">
+  🎉 You've exceeded your investment by <b>${{ '%.2f' | format(cost.roi) }}</b>!</div>
+{% endif %}
+{% endif %}

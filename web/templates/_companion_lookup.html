@@ -1,0 +1,38 @@
+<div style="border-left:5px solid {{ lookup.color }}; background:{{ lookup.color }}22;"
+     class="rounded-lg p-4 mb-4">
+  <h3 class="font-semibold" style="color:{{ lookup.color }}">🌱 {{ lookup.plant }}</h3>
+  <p class="text-sm text-gray-600 mt-1">{{ lookup.notes or 'No specific notes available.' }}</p>
+</div>
+
+<div class="grid sm:grid-cols-2 gap-4 mb-4">
+  <div>
+    <h4 class="font-medium mb-2">✅ Good Companions</h4>
+    {% for g in lookup.good %}
+      <div style="border:1px solid {{ g.color }}; background:{{ g.color }}22;"
+           class="rounded px-3 py-1.5 mb-1.5 text-sm font-medium">{{ g.name }}</div>
+    {% else %}<p class="text-sm text-gray-500">No specific good companions recorded.</p>{% endfor %}
+  </div>
+  <div>
+    <h4 class="font-medium mb-2">⛔ Poor Companions</h4>
+    {% for p in lookup.bad %}
+      <div class="rounded px-3 py-1.5 mb-1.5 text-sm font-medium bg-red-50 border border-red-200 text-red-700">{{ p }}</div>
+    {% else %}<p class="text-sm text-gray-500">No known bad companions — very sociable! 🎉</p>{% endfor %}
+  </div>
+</div>
+
+{% if lookup.pair %}
+  {% if lookup.pair.rel == 'good' %}
+  <div class="rounded-lg p-3 text-sm bg-verti-50 text-verti-700">
+    ✅ <b>{{ lookup.pair.a }}</b> and <b>{{ lookup.pair.b }}</b> are great companions.
+    {% if lookup.pair.note %}<div class="text-gray-600 mt-1">💡 {{ lookup.pair.note }}</div>{% endif %}
+  </div>
+  {% elif lookup.pair.rel == 'bad' %}
+  <div class="rounded-lg p-3 text-sm bg-red-50 text-red-700">
+    ⛔ <b>{{ lookup.pair.a }}</b> and <b>{{ lookup.pair.b }}</b> are poor companions — keep them apart.
+  </div>
+  {% else %}
+  <div class="rounded-lg p-3 text-sm bg-gray-50 text-gray-600">
+    ℹ️ <b>{{ lookup.pair.a }}</b> and <b>{{ lookup.pair.b }}</b> have no known interaction.
+  </div>
+  {% endif %}
+{% endif %}

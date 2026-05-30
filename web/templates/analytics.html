@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold">📈 Analytics &amp; Harvest Tracker</h1>
+    <p class="text-sm text-gray-500">Track harvests, analyze yields, and estimate ROI.</p>
+  </div>
+  <form method="get" action="/analytics" class="flex items-center gap-2">
+    <label class="text-sm text-gray-500">Year</label>
+    <select name="year" onchange="this.form.submit()"
+            class="border border-verti-100 rounded-lg px-3 py-1.5 text-sm bg-white">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<!-- Harvest tracker -->
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
+  <h2 class="font-semibold mb-3">🌾 Log a Harvest</h2>
+  <form method="post" action="/harvest/add" class="grid sm:grid-cols-5 gap-3 text-sm mb-5 items-end">
+    <input type="hidden" name="next" value="/analytics?year={{ year }}">
+    <div><label class="block text-gray-600 mb-1">Plant</label>
+      <select name="variant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for v in harvest.variants %}<option>{{ v }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Family</label>
+      <select name="plant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for f in harvest.families %}<option>{{ f }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Date</label>
+      <input name="date" type="date" value="{{ harvest.today }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+    <div><label class="block text-gray-600 mb-1">Qty (kg)</label>
+      <input name="quantity_kg" type="number" step="0.1" min="0.01" value="0.5" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+    <button class="bg-verti-500 hover:bg-verti-700 text-white rounded-lg py-2 font-medium">➕ Log</button>
+  </form>
+
+  {% if harvest.has_data %}
+  <div class="grid grid-cols-3 gap-4 mb-5">
+    <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">🌾 Total Harvest</div>
+      <div class="text-2xl font-bold text-verti-700">{{ '%.2f' | format(harvest.total_kg) }} kg</div></div>
+    <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">📝 Entries</div>
+      <div class="text-2xl font-bold text-verti-700">{{ harvest.entries }}</div></div>
+    <div class="bg-verti-50 rounded-lg p-3"><div class="text-sm text-gray-500">🌱 Unique Plants</div>
+      <div class="text-2xl font-bold text-verti-700">{{ harvest.unique_plants }}</div></div>
+  </div>
+
+  <div class="overflow-x-auto mb-5">
+    <table class="w-full text-sm">
+      <thead><tr class="text-left text-gray-500 border-b border-gray-100">
+        <th class="py-2 pr-4">Date</th><th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">Variant</th>
+        <th class="py-2 pr-4">Qty (kg)</th><th class="py-2 pr-4">Notes</th><th class="py-2"></th>
+      </tr></thead>
+      <tbody>
+      {% for h in harvest.harvests %}
+        <tr class="border-b border-gray-50">
+          <td class="py-1.5 pr-4">{{ h.date.strftime('%b %d, %Y') if h.date else '—' }}</td>
+          <td class="py-1.5 pr-4">{{ h.plant }}</td><td class="py-1.5 pr-4">{{ h.variant }}</td>
+          <td class="py-1.5 pr-4">{{ '%.2f' | format(h.quantity_kg or 0) }}</td>
+          <td class="py-1.5 pr-4 text-gray-500">{{ h.notes }}</td>
+          <td class="py-1.5"><form method="post" action="/harvest/delete">
+            <input type="hidden" name="harvest_id" value="{{ h.id }}">
+            <input type="hidden" name="next" value="/analytics?year={{ year }}">
+            <button class="text-red-600 hover:underline">🗑️</button></form></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="font-medium mb-2">📊 Harvest by Plant</h3>
+  {{ harvest.harvest_bar | safe }}
+  {% if harvest.harvest_line %}
+  <h3 class="font-medium mb-2 mt-4">📅 Harvest Over Time</h3>
+  {{ harvest.harvest_line | safe }}
+  {% endif %}
+  {% else %}
+  <p class="text-sm text-gray-500">🌱 No harvests logged yet. Use the form above to start tracking yields.</p>
+  {% endif %}
+</section>
+
+<!-- Garden insights -->
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
+  <h2 class="font-semibold mb-3">📊 Garden Insights</h2>
+  <h3 class="font-medium mb-1">📅 Planting Activity by Month</h3>
+  {{ insights.activity_html | safe }}
+  <h3 class="font-medium mb-1 mt-4">⏱️ Days to Harvest Distribution</h3>
+  {{ insights.days_html | safe }}
+  {% if insights.day_stats %}
+  <div class="grid grid-cols-3 gap-4 mt-2 text-center text-sm">
+    <div class="bg-verti-50 rounded-lg p-2">Fastest <b class="block text-lg text-verti-700">{{ insights.day_stats.min }} days</b></div>
+    <div class="bg-verti-50 rounded-lg p-2">Average <b class="block text-lg text-verti-700">{{ insights.day_stats.avg }} days</b></div>
+    <div class="bg-verti-50 rounded-lg p-2">Slowest <b class="block text-lg text-verti-700">{{ insights.day_stats.max }} days</b></div>
+  </div>
+  {% endif %}
+  <h3 class="font-medium mb-1 mt-4">🌡️ Frost Tolerance Overview</h3>
+  {{ insights.frost_html | safe }}
+</section>
+
+<!-- Cost analysis -->
+<section class="bg-white border border-verti-100 rounded-xl p-5">
+  <h2 class="font-semibold mb-1">💰 Cost Analysis</h2>
+  <p class="text-sm text-gray-500 mb-3">Market prices use sensible defaults per plant; adjust your investment below.</p>
+  <form hx-get="/analytics/cost" hx-target="#cost-results" hx-swap="innerHTML" hx-trigger="change"
+        hx-vals='{"year":{{ year }}}' class="grid sm:grid-cols-2 gap-3 text-sm mb-4">
+    <div><label class="block text-gray-600 mb-1">Seed investment ($)</label>
+      <input name="seed_cost" type="number" step="5" min="0" value="{{ cost.seed_cost }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+    <div><label class="block text-gray-600 mb-1">Supplies / soil ($)</label>
+      <input name="supplies_cost" type="number" step="10" min="0" value="{{ cost.supplies_cost }}" class="w-full border border-verti-100 rounded-lg px-2 py-1.5"></div>
+  </form>
+  <div id="cost-results">{% include "_cost_results.html" %}</div>
+</section>
+{% endblock %}

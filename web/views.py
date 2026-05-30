@@ -11,6 +11,25 @@ import datetime
 import pandas as pd
 
 from verti import repository as repo
+from verti.logic import (
+    companion_relationship,
+    get_plant_color,
+    get_spacing,
+    plants_in_bed,
+    plants_per_sqft,
+)
+
+MONTHS = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+          7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
+BED_TYPES = ["Raised Bed", "In-Ground", "Container", "Vertical"]
+SUN_OPTIONS = ["Full Sun (6+ hrs)", "Part Sun (3-6 hrs)", "Shade (<3 hrs)"]
+DEFAULT_PRICES = {
+    "Tomato": 3.50, "Basil": 2.00, "Carrot": 1.50, "Lettuce": 2.50, "Radish": 1.80,
+    "Cucumber": 1.80, "Beet": 2.00, "Spinach": 3.00, "Corn": 0.80, "Zucchini": 1.50,
+    "Eggplant": 2.50, "Bokchoy": 2.00, "Snap Peas": 4.00, "Snow Peas": 4.00,
+    "Ground Cherry": 6.00, "Parsnip": 2.50, "Green Onion": 2.00, "Parsley": 2.50,
+    "Sage": 3.00, "Dill": 2.00, "Borage": 3.00, "Nasturtium": 2.50, "Shiso": 4.00,
+}
 
 SEASON_COLORS = {"Warm": "#FF9800", "Cool": "#42A5F5", "Perennial": "#66BB6A"}
 METHOD_COLORS = {"Transplant": "#4CAF50", "Direct Sow": "#FF9800"}
@@ -179,3 +198,320 @@ def schedule_context(year: int, seasons: list[str] | None = None,
         "timeline_df": df,
         "years": repo.available_years(),
     }
+
+
+# ─── Garden Planner ───────────────────────────────────────────────────────────
+def planner_context(year: int) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    beds = repo.get_garden_beds()
+    families = sorted(df["Seed"].unique())
+
+    bed_views = []
+    for bed in beds:
+        plants = bed.get("plants", [])
+        good, bad = [], []
+        for i, p1 in enumerate(plants):
+            for p2 in plants[i + 1:]:
+                rel = companion_relationship(p1, p2, companion)
+                if rel == "good":
+                    good.append(f"{p1} & {p2}")
+                elif rel == "bad":
+                    bad.append(f"{p1} & {p2}")
+        bed_views.append({
+            **bed,
+            "area": round(bed["width"] * bed["length"]),
+            "good": good,
+            "bad": bad,
+        })
+
+    return {
+        "year": year, "years": repo.available_years(), "beds": beds, "bed_views": bed_views,
+        "companion": companion, "families": families,
+        "bed_types": BED_TYPES, "sun_options": SUN_OPTIONS,
+    }
+
+
+def spacing_context(year: int, plant: str | None, width: float, length: float) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    families = sorted(df["Seed"].unique())
+    plant = plant or (families[0] if families else "")
+
+    info = get_spacing(plant, companion)
+    sqft = width * length
+    count = plants_in_bed(width, length, info["spacing_in"])
+
+    per_sq_csv = ""
+    rows = df[df["Seed"] == plant]
+    if not rows.empty and "Per Square" in rows.columns:
+        ps = rows["Per Square"].dropna()
+        if not ps.empty:
+            per_sq_csv = ps.iloc[0]
+    sfg_count = int(per_sq_csv * sqft) if per_sq_csv not in ("", None) else None
+
+    reference = []
+    for p, g in companion.get("spacing_guide", {}).items():
+        pr = df[df["Seed"] == p]
+        csv_ps = ""
+        if not pr.empty and "Per Square" in pr.columns:
+            psv = pr["Per Square"].dropna()
+            if not psv.empty:
+                csv_ps = psv.iloc[0]
+        reference.append({
+            "plant": p, "spacing": g["spacing_in"], "row": g["row_spacing_in"],
+            "depth": g["depth_in"], "sfg": round(plants_per_sqft(g["spacing_in"]), 1),
+            "csv": csv_ps,
+        })
+    reference.sort(key=lambda r: r["plant"])
+
+    return {
+        "year": year, "years": repo.available_years(), "families": families, "plant": plant,
+        "width": width, "length": length, "info": info, "sqft": round(sqft),
+        "count": count, "per_sq_csv": per_sq_csv, "sfg_count": sfg_count, "reference": reference,
+    }
+
+
+def sunlight_context(year: int) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    sun_icons = companion.get("sun_icons", {})
+
+    groups = []
+    if "Sun" in df.columns:
+        for sun_level, plants in sorted(df.groupby("Sun")["Display Name"].apply(list).items()):
+            families: dict[str, list[str]] = {}
+            for p in plants:
+                families.setdefault(p.split(" ")[0], []).append(p)
+            groups.append({
+                "level": sun_level, "icon": sun_icons.get(sun_level, "🌿"), "count": len(plants),
+                "families": [
+                    {"seed": s, "color": get_plant_color(s, companion), "variants": v}
+                    for s, v in sorted(families.items())
+                ],
+            })
+    sun_counts = df["Sun"].value_counts().to_dict() if "Sun" in df.columns else {}
+    return {"year": year, "years": repo.available_years(), "groups": groups,
+            "sun_counts": sun_counts}
+
+
+# ─── Database Manager ───────────────────────────────────────────────────────────
+def database_context(year: int, search: str = "", season: str = "All",
+                     method: str = "All", frost: str = "All") -> dict:
+    df = repo.get_seeds_df(year)
+    opts = {
+        "seasons": ["All"] + (sorted(df["Season"].dropna().unique()) if "Season" in df else []),
+        "methods": ["All"] + (sorted(df["Planting Method"].dropna().unique())
+                              if "Planting Method" in df else []),
+        "frosts": ["All"] + (sorted(df["Frost"].dropna().unique()) if "Frost" in df else []),
+    }
+    view = df.copy()
+    if search:
+        s = search.strip()
+        mask = (
+            view["Seed"].astype(str).str.contains(s, case=False, na=False)
+            | view["Variant"].astype(str).str.contains(s, case=False, na=False)
+            | view["Brand"].astype(str).str.contains(s, case=False, na=False)
+        )
+        view = view[mask]
+    if season != "All":
+        view = view[view["Season"] == season]
+    if method != "All":
+        view = view[view["Planting Method"] == method]
+    if frost != "All":
+        view = view[view["Frost"] == frost]
+
+    records = []
+    for _, r in view.iterrows():
+        records.append({
+            "name": r["Display Name"], "brand": r.get("Brand", ""), "season": r.get("Season", ""),
+            "sun": r.get("Sun", ""), "frost": r.get("Frost", ""),
+            "method": r.get("Planting Method", ""),
+            "days": "" if pd.isna(r.get("Days")) else r.get("Days"),
+            "per_square": "" if pd.isna(r.get("Per Square")) else r.get("Per Square"),
+            "start": r["Start Date"].date() if pd.notna(r["Start Date"]) else None,
+            "end": r["End Date"].date() if pd.notna(r["End Date"]) else None,
+            "plant_this_year": bool(r.get("Plant in 2025")) if pd.notna(r.get("Plant in 2025"))
+            else False,
+        })
+    return {
+        "year": year, "years": repo.available_years(), "options": opts, "records": records,
+        "count": len(records), "search": search,
+        "sel_season": season, "sel_method": method, "sel_frost": frost,
+    }
+
+
+# ─── Companion Plants ─────────────────────────────────────────────────────────
+def _all_plants(df: pd.DataFrame, companions: dict) -> list[str]:
+    return sorted(set(list(companions.keys()) + list(df["Seed"].unique())))
+
+
+def companion_lookup_context(year: int, plant: str | None,
+                             plant_a: str | None, plant_b: str | None) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    companions = companion.get("companions", {})
+    plants = _all_plants(df, companions)
+    plant = plant or (plants[0] if plants else "")
+
+    info = companions.get(plant, {})
+    good = [{"name": p, "color": get_plant_color(p, companion)} for p in info.get("good", [])]
+    bad = info.get("bad", [])
+
+    pair = None
+    if plant_a and plant_b:
+        rel = companion_relationship(plant_a, plant_b, companion)
+        note = companions.get(plant_a, {}).get("notes", "")
+        pair = {"a": plant_a, "b": plant_b, "rel": rel, "note": note}
+
+    return {
+        "year": year, "years": repo.available_years(), "plants": plants, "plant": plant,
+        "color": get_plant_color(plant, companion), "notes": info.get("notes", ""),
+        "good": good, "bad": bad, "pair": pair,
+        "plant_a": plant_a or plant, "plant_b": plant_b,
+    }
+
+
+def companion_matrix_context(year: int, selected: list[str] | None) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    companions = companion.get("companions", {})
+    plants = _all_plants(df, companions)
+    if not selected:
+        selected = [p for p in sorted(companions.keys())[:16] if p in plants]
+
+    z, hover = [], []
+    good_count = bad_count = 0
+    for p1 in selected:
+        row_z, row_h = [], []
+        for p2 in selected:
+            if p1 == p2:
+                row_z.append(0)
+                row_h.append(f"{p1} (same plant)")
+            else:
+                rel = companion_relationship(p1, p2, companion)
+                if rel == "good":
+                    row_z.append(1)
+                    row_h.append(f"✅ {p1} + {p2}: Good")
+                    good_count += 1
+                elif rel == "bad":
+                    row_z.append(-1)
+                    row_h.append(f"⛔ {p1} + {p2}: Poor")
+                    bad_count += 1
+                else:
+                    row_z.append(0)
+                    row_h.append(f"⬜ {p1} + {p2}: Neutral")
+        z.append(row_z)
+        hover.append(row_h)
+
+    return {
+        "year": year, "years": repo.available_years(), "plants": plants, "selected": selected,
+        "z": z, "labels": selected, "hover": hover,
+        "good_count": good_count // 2, "bad_count": bad_count // 2,
+    }
+
+
+def companion_stats_context(year: int) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    companions = companion.get("companions", {})
+    stats = []
+    for plant in sorted(df["Seed"].unique()):
+        info = companions.get(plant, {})
+        stats.append({
+            "plant": plant, "in_db": plant in companions,
+            "good": len(info.get("good", [])), "bad": len(info.get("bad", [])),
+            "notes": info.get("notes", ""),
+        })
+    stats.sort(key=lambda r: r["good"], reverse=True)
+    return {"stats": stats}
+
+
+# ─── Analytics ─────────────────────────────────────────────────────────────────
+def analytics_harvest_context(year: int) -> dict:
+    df = repo.get_seeds_df(year)
+    harvests = repo.list_harvests()
+    companion = repo.get_companion_data()
+    families = sorted(df["Seed"].unique())
+    variants = sorted(df["Display Name"].unique())
+
+    hdf = repo.get_harvest_log()
+    total_kg = float(hdf["Quantity_kg"].sum()) if not hdf.empty else 0.0
+    plant_totals = pd.DataFrame(columns=["Plant", "Total (kg)"])
+    daily = pd.DataFrame(columns=["Date", "Plant", "Quantity_kg"])
+    if not hdf.empty:
+        plant_totals = (hdf.groupby("Plant")["Quantity_kg"].sum()
+                        .sort_values(ascending=False).reset_index())
+        plant_totals.columns = ["Plant", "Total (kg)"]
+        daily = hdf.groupby(["Date", "Plant"])["Quantity_kg"].sum().reset_index()
+
+    return {
+        "year": year, "years": repo.available_years(), "companion": companion,
+        "families": families, "variants": variants, "harvests": harvests,
+        "today": datetime.date.today(),
+        "total_kg": total_kg, "entries": len(harvests),
+        "unique_plants": hdf["Plant"].nunique() if not hdf.empty else 0,
+        "plant_totals": plant_totals, "daily": daily,
+        "has_data": not hdf.empty,
+        "variant_map": {f: sorted(df[df["Seed"] == f]["Display Name"].unique()) for f in families},
+    }
+
+
+def analytics_insights_context(year: int) -> dict:
+    df = repo.get_seeds_df(year)
+    activity = df.copy()
+    activity["Start Month"] = activity["Start Date"].dt.month
+    activity["End Month"] = activity["End Date"].dt.month
+
+    starts = activity["Start Month"].dropna().astype(int).value_counts().sort_index()
+    ends = activity["End Month"].dropna().astype(int).value_counts().sort_index()
+    months = sorted(set(starts.index) | set(ends.index))
+    merged = pd.DataFrame({
+        "Month": months,
+        "Month Label": [MONTHS[m] for m in months],
+        "Starts": [int(starts.get(m, 0)) for m in months],
+        "Transplants": [int(ends.get(m, 0)) for m in months],
+    })
+
+    days_numeric = pd.to_numeric(df["Days"], errors="coerce").dropna()
+    day_stats = None
+    if not days_numeric.empty:
+        day_stats = {"min": int(days_numeric.min()), "avg": int(days_numeric.mean()),
+                     "max": int(days_numeric.max())}
+
+    frost_counts = df["Frost"].value_counts().to_dict() if "Frost" in df.columns else {}
+    return {
+        "year": year, "years": repo.available_years(), "merged": merged,
+        "days_numeric": days_numeric, "day_stats": day_stats, "frost_counts": frost_counts,
+    }
+
+
+def analytics_cost_context(year: int, prices: dict | None, seed_cost: float,
+                           supplies_cost: float) -> dict:
+    df = repo.get_seeds_df(year)
+    companion = repo.get_companion_data()
+    families = sorted(df["Seed"].unique())
+    prices = prices or {p: DEFAULT_PRICES.get(p, 2.00) for p in families}
+    investment = seed_cost + supplies_cost
+
+    hdf = repo.get_harvest_log()
+    result = {
+        "year": year, "years": repo.available_years(), "companion": companion,
+        "families": families, "prices": prices, "seed_cost": seed_cost,
+        "supplies_cost": supplies_cost, "investment": investment, "has_data": not hdf.empty,
+    }
+    if hdf.empty:
+        return result
+
+    by_plant = hdf.groupby("Plant")["Quantity_kg"].sum().reset_index()
+    by_plant.columns = ["Plant", "Harvested (kg)"]
+    by_plant["Market Price ($/kg)"] = by_plant["Plant"].map(lambda p: prices.get(p, 2.0))
+    by_plant["Value ($)"] = (by_plant["Harvested (kg)"] * by_plant["Market Price ($/kg)"]).round(2)
+    total_value = float(by_plant["Value ($)"].sum())
+    roi = total_value - investment
+    result.update({
+        "cost_df": by_plant, "total_value": total_value, "roi": roi,
+        "roi_pct": (roi / investment * 100) if investment > 0 else 0,
+        "total_harvested": float(hdf["Quantity_kg"].sum()),
+    })
+    return result

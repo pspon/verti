@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Companion Plants{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold">🤝 Companion Planting Guide</h1>
+    <p class="text-sm text-gray-500">Which plants grow best together — and which to keep apart.</p>
+  </div>
+  <form method="get" action="/companions" class="flex items-center gap-2">
+    <label class="text-sm text-gray-500">Year</label>
+    <select name="year" onchange="this.form.submit()"
+            class="border border-verti-100 rounded-lg px-3 py-1.5 text-sm bg-white">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<!-- Lookup -->
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
+  <h2 class="font-semibold mb-3">🔍 Find Companions for a Plant</h2>
+  <form hx-get="/companions" hx-target="#lookup" hx-swap="innerHTML" hx-trigger="change"
+        hx-vals='{"fragment":"lookup","year":{{ year }}}' class="grid sm:grid-cols-3 gap-3 text-sm mb-4">
+    <div><label class="block text-gray-600 mb-1">Plant</label>
+      <select name="plant" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for p in lookup.plants %}<option {% if p == lookup.plant %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Pair check — Plant A</label>
+      <select name="a" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        {% for p in lookup.plants %}<option {% if p == lookup.plant_a %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div>
+    <div><label class="block text-gray-600 mb-1">Plant B</label>
+      <select name="b" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+        <option value="">—</option>
+        {% for p in lookup.plants %}<option {% if p == lookup.plant_b %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div>
+  </form>
+  <div id="lookup">{% include "_companion_lookup.html" %}</div>
+</section>
+
+<!-- Matrix -->
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
+  <h2 class="font-semibold mb-1">🗂️ Compatibility Matrix</h2>
+  <p class="text-sm text-gray-500 mb-3">Green = good · Red = poor · Grey = neutral</p>
+  <form hx-get="/companions" hx-target="#matrix" hx-swap="innerHTML" hx-trigger="change"
+        hx-vals='{"fragment":"matrix","year":{{ year }}}' class="mb-4 text-sm">
+    <label class="block text-gray-600 mb-1">Select plants (Ctrl/Cmd-click)</label>
+    <select name="mp" multiple size="8" class="w-full border border-verti-100 rounded-lg px-2 py-1.5">
+      {% for p in matrix.plants %}<option value="{{ p }}" {% if p in matrix.selected %}selected{% endif %}>{{ p }}</option>{% endfor %}
+    </select>
+  </form>
+  <div id="matrix">{% include "_companion_matrix.html" %}</div>
+</section>
+
+<!-- Tips -->
+<section class="bg-white border border-verti-100 rounded-xl p-5 mb-8">
+  <h2 class="font-semibold mb-3">💡 General Companion Planting Tips</h2>
+  {% set tips = [
+    ('🌼','Flowers as Pest Deterrents','Marigolds repel nematodes/aphids, Nasturtiums trap aphids, Borage deters tomato hornworm and attracts pollinators.'),
+    ('🌿','The Three Sisters','Corn, Beans and Squash/Zucchini: corn supports beans, beans fix nitrogen, squash shades the soil.'),
+    ('🧄','Alliums as Repellents','Garlic chives near roses and vegetables help repel aphids, beetles, and fungal disease.'),
+    ('🍅','Tomato & Basil','Basil repels aphids/whiteflies and may improve flavour. Plant 12–18 inches from tomatoes.'),
+    ('🥕','Root & Leaf Interplanting','Carrots loosen soil for lettuce; lettuce shades carrot roots. Add radishes as a pest decoy.'),
+    ('🔄','Rotate Your Crops','nightshades → brassicas → legumes → roots, to break pest cycles and replenish soil.'),
+    ('🌱','Nitrogen Fixers','Peas fix nitrogen for heavy feeders like corn, lettuce and spinach.')
+  ] %}
+  <div class="grid sm:grid-cols-2 gap-3">
+    {% for icon, title, body in tips %}
+    <details class="border border-verti-100 rounded-lg p-3">
+      <summary class="cursor-pointer font-medium">{{ icon }} {{ title }}</summary>
+      <p class="text-sm text-gray-600 mt-2">{{ body }}</p>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="bg-white border border-verti-100 rounded-xl p-5">
+  <h2 class="font-semibold mb-3">📋 Your Garden's Companion Stats</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead><tr class="text-left text-gray-500 border-b border-gray-100">
+        <th class="py-2 pr-4">Plant</th><th class="py-2 pr-4">In DB</th>
+        <th class="py-2 pr-4">Good</th><th class="py-2 pr-4">Poor</th><th class="py-2">Notes</th>
+      </tr></thead>
+      <tbody>
+      {% for s in stats %}
+        <tr class="border-b border-gray-50">
+          <td class="py-1.5 pr-4 font-medium">{{ s.plant }}</td>
+          <td class="py-1.5 pr-4">{{ '✅' if s.in_db else '—' }}</td>
+          <td class="py-1.5 pr-4">{{ s.good }}</td><td class="py-1.5 pr-4">{{ s.bad }}</td>
+          <td class="py-1.5 text-gray-500">{{ s.notes }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
