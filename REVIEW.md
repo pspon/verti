@@ -7,6 +7,29 @@ covers the *current* state of that codebase.
 
 ---
 
+## Status (post-review fixes)
+
+A first round of fixes has landed on branch `fix/harvest-year-progress-docs`
+(merged via PR #1) plus a follow-up hotfix. Resolution at a glance:
+
+| Item | Status |
+|------|--------|
+| 2.1 Harvests have no year dimension | ✅ **Fixed** — `season_year` added to `Harvest`; reads/writes scoped by year; idempotent startup schema-reconcile upgrades existing DBs in place |
+| 2.2 Two harvest forms write inconsistent data | ✅ **Fixed** — both forms now send `plant`=family, `variant`=variety |
+| 2.3 Progress tracking read-only | ✅ **Fixed** — `set_progress_status` + `POST /schedule/progress` + editable status `<select>` per row |
+| 2.4 "Plant in <year>" flag is dead / hardcoded column | ⬜ Open (follow-up) |
+| 2.5 Open redirect on harvest mutations | ⬜ Open (follow-up) |
+| 2.6 `get_seeds_df` silent year substitution | ⬜ Open (follow-up) |
+| 2.7 No auth / deprecated `on_event` / minor edges | ⬜ Open (follow-up) |
+| §3 Dead post-Streamlit code | ◐ Partly addressed — `STATUS_OPTIONS`/`STATUS_LABELS` are now live (wired into progress editing); the bulk `save_*` writers remain unused |
+| §4 Stale `CLAUDE.md` | ✅ **Fixed** — rewritten for the FastAPI/HTMX/SQLite stack |
+| §4 No tests | ⬜ Open (follow-up) |
+
+The sections below describe each issue as originally found, annotated with its
+current status.
+
+---
+
 ## 1. What the app is (product summary)
 
 Verti is a **single-user garden-planning web app** for a Toronto-area grower
@@ -45,20 +68,20 @@ partial based on `HX-Request` + `fragment`) is applied consistently.
 
 Ranked roughly by impact.
 
-### 2.1 Harvest data has no year dimension — the Analytics/Database year selector is a lie
+### 2.1 Harvest data has no year dimension — the Analytics/Database year selector is a lie  ✅ FIXED
 - **Where:** `verti/models.py` (`Harvest` has no `season_year`); `verti/repository.py` (`get_harvest_log`, `list_harvests` select *all* harvests); `web/views.py` (analytics contexts).
 - **Problem:** `Harvest` carries no season/year. Every harvest query returns the entire table. So the Year dropdown on **Analytics** and **Database Manager** changes the seed/variant lists but the harvest totals, entry counts, "unique plants", charts, and ROI are **identical for every year**. A 2026 harvest shows up in the 2025 analytics and vice-versa.
-- **Fix direction:** add `season_year` to `Harvest`, scope all harvest reads/writes by year, and pass the year through the add-harvest forms.
+- **Resolution:** added `season_year` to `Harvest`; `get_harvest_log`/`list_harvests`/`add_harvest` now take a `year`; migration derives the year from the harvest filename and the active year is threaded through both forms. Because `create_all` cannot alter an existing table, `db.init_db()` now runs an idempotent `_reconcile_schema` step that `ALTER`s in the column and backfills the year from each harvest's date, upgrading pre-existing databases in place.
 
-### 2.2 The two "Log a Harvest" forms write inconsistent data → split totals
+### 2.2 The two "Log a Harvest" forms write inconsistent data → split totals  ✅ FIXED
 - **Where:** `web/templates/database.html` vs `web/templates/analytics.html`.
 - **Problem:** On **Analytics**, the harvest form sends `plant` = *family* ("Tomato") and `variant` = *display name* ("Tomato Sungold"). On **Database Manager**, the single dropdown sends `plant` = *display name* ("Tomato Sungold") and leaves `variant` empty. Analytics groups by `Plant`, so harvests logged from the two pages land in **different groups** ("Tomato" vs "Tomato Sungold"), fragmenting totals, charts, and ROI. Market-price lookup (`DEFAULT_PRICES`, keyed by family) also misses for the display-name rows.
-- **Fix direction:** pick one contract (family in `plant`, variety in `variant`) and use it in both forms.
+- **Resolution:** both forms now use one contract — `plant` = family (with a `Variety` dropdown for `variant`) — so harvests group consistently and the family-keyed price lookup resolves.
 
-### 2.3 Progress tracking is read-only — a regression from the Streamlit app
+### 2.3 Progress tracking is read-only — a regression from the Streamlit app  ✅ FIXED
 - **Where:** schedule page renders `start_status`/`transplant_status` (`_schedule_results.html`) but there is **no endpoint** to change them. `repository.save_progress` and `logic.get_plant_status`/`STATUS_*` exist but are never called from `web/`.
 - **Problem:** The Schedule page and dashboard advertise "progress tracking," yet a user cannot mark a plant as started/transplanted/done in the new UI. The only way status is ever set is via the one-time migration of the legacy `*_progress.json`. The "X fully done" metric and progress bar are therefore effectively frozen.
-- **Fix direction:** add an HTMX endpoint to toggle/cycle status per plant and call `save_progress` (or a granular upsert).
+- **Resolution:** added `repository.set_progress_status` (granular per-row upsert), a `POST /schedule/progress` HTMX endpoint, and an editable status `<select>` in each schedule row (`_progress_cell.html`) that persists on change. This also puts the previously-dead `STATUS_OPTIONS`/`STATUS_LABELS` to use. The "fully done" counter recomputes from persisted status on reload.
 
 ### 2.4 The "Plant in <year>" flag is dead — unchecking it does nothing
 - **Where:** `Seed.plant_this_year`, surfaced in the edit form, but never used as a filter in `dashboard_context`/`schedule_context`/timeline.
@@ -87,14 +110,14 @@ Ranked roughly by impact.
 The Streamlit UI and `utils/helpers.py` were removed, but a layer of helper
 functions that only the old UI called is still present and unreferenced:
 
-- `verti/logic.py`: `calculate_planting_dates`, `get_plant_status`, `bed_for_plant`, and the `STATUS_OPTIONS/LABELS/COLORS` constants (the templates re-define their own status-label dict inline in `_schedule_results.html`).
+- `verti/logic.py`: `calculate_planting_dates`, `get_plant_status`, `bed_for_plant`. (`STATUS_OPTIONS`/`STATUS_LABELS` are **no longer dead** — the progress-editing fix in 2.3 wired them into the templates as the single source of status labels; `STATUS_COLORS` is still unused.)
 - `verti/repository.py`: `save_seeds_df`, `save_progress`, `save_planting_rules`, `save_harvest_log`, `save_garden_beds`, `upsert_planting_rule_deltas`.
 
 (Verified by `git grep` — each is defined but has no caller outside its own
 module.) These are bulk delete-then-reinsert "replace whole table" writers from
 the file era; the live UI uses the granular `add_*/update_*/delete_*/upsert_*`
-paths instead. Keeping them is harmless at runtime but is dead maintenance
-surface.
+paths instead (and the new `set_progress_status`). Keeping them is harmless at
+runtime but is dead maintenance surface.
 
 `PlantingRule` / planting-rules import and `calculate_planting_dates` together
 form a whole "compute dates from frost deltas" subsystem that nothing in the web
@@ -105,12 +128,13 @@ UI invokes — dates are read directly from the stored `start_indoors`/
 
 ## 4. Documentation drift
 
-- **`CLAUDE.md` is stale and now actively misleading.** It still describes a
-  Streamlit multi-page app (`app.py`, `pages/1_…`, `utils/helpers.py`), flat-file
-  storage, `@st.cache_data`, and `uv run streamlit run app.py`. None of that
-  exists anymore. The README, by contrast, is accurate and good. CLAUDE.md should
-  be rewritten to match the FastAPI/HTMX/SQLite reality.
-- **No tests exist**, despite `views.py` and `logic.py` being explicitly written
+- **`CLAUDE.md` is stale and now actively misleading.**  ✅ **FIXED** — it previously
+  described a Streamlit multi-page app (`app.py`, `pages/1_…`, `utils/helpers.py`),
+  flat-file storage, `@st.cache_data`, and `uv run streamlit run app.py`, none of
+  which still exist. It has been rewritten to match the FastAPI/HTMX/SQLite reality
+  (correct run/migration commands and `verti/` + `web/` layout). The README was
+  already accurate.
+- **No tests exist** ⬜, despite `views.py` and `logic.py` being explicitly written
   "so the logic stays testable." The harvest-grouping (2.2), year-scoping (2.1),
   and spacing math are exactly the kind of pure functions that would benefit.
 
@@ -123,8 +147,15 @@ consistent HTMX pattern, sensible Docker/volume deployment, and an idempotent
 migration with a `--force` escape hatch. The product covers a coherent set of
 real gardening workflows.
 
-The most important issues are **data-model gaps that silently produce wrong
+The most important issues were **data-model gaps that silently produced wrong
 numbers** — harvests not scoped by year (2.1) and the two harvest forms writing
 incompatible shapes (2.2) — followed by the **lost ability to update progress**
-(2.3) and the **inert "plant this year" flag** (2.4). After those, the cleanup
-is mostly removing post-migration dead code and fixing the stale `CLAUDE.md`.
+(2.3). **These three are now fixed**, along with the stale `CLAUDE.md`.
+
+Remaining follow-ups, in rough priority order: the **inert "plant this year"
+flag** and hardcoded `"Plant in 2025"` column (2.4); deciding whether to wire up
+or delete the planting-rules / `calculate_planting_dates` subsystem and the
+bulk `save_*` writers (§3); the **open redirect** on harvest mutations (2.5);
+**authentication** before any public deployment (2.7); the silent year
+substitution in `get_seeds_df` (2.6); and **adding tests** for the now-critical
+year-scoping and harvest-grouping logic (§4).
