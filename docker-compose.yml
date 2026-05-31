@@ -2,7 +2,7 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "8080:8000"
     environment:
       VERTI_DB_PATH: /data/verti.db
     volumes:

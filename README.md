@@ -60,13 +60,13 @@ can point at a mounted volume in Docker / cloud deployments.
 ```bash
 # With uv (recommended)
 uv sync
-uv run python -m verti.migrate          # first run only
-uv run uvicorn web.main:app --reload    # http://localhost:8000
+uv run python -m verti.migrate                      # first run only
+uv run uvicorn web.main:app --reload --port 8080    # http://localhost:8080
 
 # Without uv
 pip install -r requirements.txt
 python -m verti.migrate
-uvicorn web.main:app --reload
+uvicorn web.main:app --reload --port 8080
 ```
 
 ## Run with Docker (recommended for deployment)
@@ -76,7 +76,7 @@ survives restarts and redeploys — unlike a flat-file store on an ephemeral clo
 filesystem.
 
 ```bash
-docker compose up --build      # http://localhost:8000
+docker compose up --build      # http://localhost:8080
 ```
 
 The entrypoint runs the migration on startup (idempotent) to build the database
