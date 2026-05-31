@@ -12,6 +12,6 @@ RUN chmod +x docker-entrypoint.sh
 
 # DB lives on a mounted volume so writes survive restarts/redeploys.
 ENV VERTI_DB_PATH=/data/verti.db
-EXPOSE 8000
+EXPOSE 8080
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

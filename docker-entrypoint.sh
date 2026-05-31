@@ -5,4 +5,4 @@ set -euo pipefail
 # Idempotent: skips import if the database already contains data.
 python -m verti.migrate
 
-exec uvicorn web.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+exec uvicorn web.main:app --host 0.0.0.0 --port "${PORT:-8080}"
